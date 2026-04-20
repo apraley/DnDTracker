@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="parchment">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grimoire</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
   <!-- Apply saved theme before paint to prevent flash -->
-  <script>(function(){var t=localStorage.getItem('dnd_theme')||'parchment';document.documentElement.setAttribute('data-theme',t);})();</script>
+  <script>(function(){var t=localStorage.getItem('dnd_theme')||'dark';if(t==='parchment')t='dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <!-- Three.js for 3D dice -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
   <style>
@@ -1393,9 +1393,8 @@
   <h1 id="app-title">Grimoire</h1>
   <div id="theme-switcher" style="margin-left:auto;display:flex;gap:4px;align-items:center;">
     <span style="font-family:'Cinzel',serif;font-size:0.62rem;color:rgba(240,221,176,0.6);letter-spacing:1px;margin-right:4px;">THEME</span>
-    <button onclick="setTheme('dark')"      id="theme-btn-dark"      title="Dark"      style="background:rgba(0,0,0,0.5);border:1px solid rgba(200,160,64,0.3);border-radius:3px;color:#c8a040;cursor:pointer;font-family:'Cinzel',serif;font-size:0.62rem;padding:4px 8px;letter-spacing:0.5px;transition:all 0.15s;">Dark</button>
-    <button onclick="setTheme('parchment')" id="theme-btn-parchment" title="Parchment" style="background:rgba(240,230,200,0.15);border:1px solid rgba(200,160,64,0.3);border-radius:3px;color:#f0ddb0;cursor:pointer;font-family:'Cinzel',serif;font-size:0.62rem;padding:4px 8px;letter-spacing:0.5px;transition:all 0.15s;">Parchment</button>
-    <button onclick="setTheme('light')"     id="theme-btn-light"     title="Light"     style="background:rgba(255,255,255,0.12);border:1px solid rgba(200,160,64,0.3);border-radius:3px;color:#f0f0f0;cursor:pointer;font-family:'Cinzel',serif;font-size:0.62rem;padding:4px 8px;letter-spacing:0.5px;transition:all 0.15s;">Light</button>
+    <button onclick="setTheme('dark')"  id="theme-btn-dark"  title="Dark"  style="background:rgba(0,0,0,0.5);border:1px solid rgba(200,160,64,0.3);border-radius:3px;color:#c8a040;cursor:pointer;font-family:'Cinzel',serif;font-size:0.62rem;padding:4px 8px;letter-spacing:0.5px;transition:all 0.15s;">Dark</button>
+    <button onclick="setTheme('light')" id="theme-btn-light" title="Light" style="background:rgba(255,255,255,0.12);border:1px solid rgba(200,160,64,0.3);border-radius:3px;color:#f0f0f0;cursor:pointer;font-family:'Cinzel',serif;font-size:0.62rem;padding:4px 8px;letter-spacing:0.5px;transition:all 0.15s;">Light</button>
     <button id="dice-fab-btn" title="Roll Dice" onclick="toggleDiceTray()">🎲</button>
   </div>
 </header>
@@ -3584,7 +3583,7 @@ function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('dnd_theme', theme);
   // Update button active states
-  ['dark','parchment','light'].forEach(t => {
+  ['dark','light'].forEach(t => {
     const btn = document.getElementById('theme-btn-' + t);
     if (!btn) return;
     const active = t === theme;
@@ -3593,9 +3592,10 @@ function setTheme(theme) {
     btn.style.opacity      = active ? '1' : '0.65';
   });
 }
-// Load saved theme on startup (default: parchment)
+// Load saved theme on startup (default: dark)
 (function() {
-  const saved = localStorage.getItem('dnd_theme') || 'parchment';
+  let saved = localStorage.getItem('dnd_theme') || 'dark';
+  if (saved === 'parchment') saved = 'dark';
   document.documentElement.setAttribute('data-theme', saved);
   // Defer button update until DOM ready
   window.addEventListener('DOMContentLoaded', () => setTheme(saved));
