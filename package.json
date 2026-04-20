@@ -2,7 +2,7 @@
   "name": "grimoire",
   "version": "1.0.0",
   "scripts": {
-    "start": "serve -p ${PORT:-3005} ."
+    "start": "serve --listen tcp://0.0.0.0:${PORT:-3005} ."
   },
   "dependencies": {
     "serve": "^14.2.3"
