@@ -1502,9 +1502,24 @@
       <button class="btn btn-ghost btn-sm" style="flex:1;font-size:0.72rem;" onclick="cloudSave()">☁ Save</button>
       <button class="btn btn-ghost btn-sm" style="flex:1;font-size:0.72rem;" onclick="cloudLoad()">☁ Load</button>
     </div>
+    <div style="padding:0 10px 8px;">
+      <button class="btn btn-ghost btn-sm" style="width:100%;font-size:0.72rem;" onclick="openRestoreModal()">🕐 Restore Backup</button>
+    </div>
     <div id="cloud-status" style="padding:0 10px 8px;font-size:0.68rem;color:var(--sidebar-txt);display:none;"></div>
   </div>
 </aside>
+
+<!-- Restore Backup Modal -->
+<div id="restore-modal" class="overlay" style="display:none;" onclick="overlayClose(event,'restore-modal')">
+  <div class="modal" style="max-width:480px;">
+    <h2 style="margin-bottom:4px;">🕐 Restore Backup</h2>
+    <p style="font-size:0.8rem;color:var(--text3);margin-bottom:16px;">Last 5 auto-saves. Restoring will reload the page.</p>
+    <div id="restore-list"></div>
+    <div style="margin-top:16px;text-align:right;">
+      <button class="btn btn-ghost" onclick="document.getElementById('restore-modal').style.display='none'">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <!-- Cloud Sync Modal -->
 <div id="cloud-modal" class="overlay" style="display:none;" onclick="overlayClose(event,'cloud-modal')">
@@ -3564,9 +3579,60 @@ let S = (() => {
   catch(e) { return defaultState(); }
 })();
 
+const BACKUP_SK = 'dnd_tracker_backups';
+const BACKUP_MAX = 5;
+
+function saveBackup() {
+  try {
+    const backups = JSON.parse(localStorage.getItem(BACKUP_SK) || '[]');
+    backups.unshift({ ts: Date.now(), data: JSON.stringify(S) });
+    if (backups.length > BACKUP_MAX) backups.length = BACKUP_MAX;
+    localStorage.setItem(BACKUP_SK, JSON.stringify(backups));
+  } catch(e) {}
+}
+
 function save() {
   localStorage.setItem(SK, JSON.stringify(S));
+  saveBackup();
   try { _dndChannel?.postMessage({ type: 'state-updated' }); } catch(e) {}
+}
+
+function openRestoreModal() {
+  const backups = JSON.parse(localStorage.getItem(BACKUP_SK) || '[]');
+  const list = document.getElementById('restore-list');
+  if (!backups.length) {
+    list.innerHTML = '<p style="color:var(--text3);font-size:0.85rem;">No backups yet — backups are created automatically each time you save.</p>';
+  } else {
+    list.innerHTML = backups.map((b, i) => {
+      const d = new Date(b.ts);
+      const label = d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })
+        + ' ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+      let preview = '';
+      try {
+        const parsed = JSON.parse(b.data);
+        const camps = parsed.campaigns?.map(c => c.name).filter(Boolean).join(', ') || '—';
+        const sessions = parsed.sessions?.length || 0;
+        preview = `${camps} · ${sessions} session${sessions !== 1 ? 's' : ''}`;
+      } catch(e) {}
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--parchment-dk);">
+        <div>
+          <div style="font-size:0.85rem;color:var(--text);font-weight:600;">${label}</div>
+          <div style="font-size:0.72rem;color:var(--text3);margin-top:2px;">${preview}</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="restoreBackup(${i})">Restore</button>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('restore-modal').style.display = 'flex';
+}
+
+function restoreBackup(i) {
+  const backups = JSON.parse(localStorage.getItem(BACKUP_SK) || '[]');
+  if (!backups[i]) return;
+  if (!confirm('Restore this backup? Your current data will be replaced.')) return;
+  localStorage.setItem(SK, backups[i].data);
+  document.getElementById('restore-modal').style.display = 'none';
+  location.reload();
 }
 
 let _id = Date.now();
