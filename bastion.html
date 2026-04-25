@@ -1,0 +1,2769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bastion Builder — D&D 2024</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #120f0c;
+  --surface: #1e1a15;
+  --surface2: #27221b;
+  --surface3: #332c23;
+  --border: #3d342a;
+  --gold: #c9a84c;
+  --gold-dim: #8a7332;
+  --text: #e8ddc5;
+  --text-dim: #9a8f78;
+  --text-muted: #6a604e;
+  --red: #b35a5a;
+  --green: #6b9e5a;
+  --blue: #5a8bb3;
+  --purple: #8a6ab3;
+  --craft: #6b9e5a;
+  --empower: #8a6ab3;
+  --harvest: #5a9e8a;
+  --maintain: #5a8bb3;
+  --recruit: #b38a5a;
+  --research: #b3a35a;
+  --trade: #b35a8a;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, system-ui, sans-serif;
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse at top, rgba(201,168,76,0.04), transparent 70%),
+    radial-gradient(ellipse at bottom, rgba(90,139,179,0.03), transparent 70%);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: var(--surface);
+  border-bottom: 2px solid var(--gold-dim);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.title-area { flex: 1; min-width: 200px; }
+
+.bastion-name {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.7em;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+  outline: none;
+  border-bottom: 1px dashed transparent;
+  cursor: text;
+  padding: 2px 0;
+  display: inline-block;
+  max-width: 100%;
+}
+.bastion-name:hover, .bastion-name:focus { border-color: var(--gold-dim); }
+
+.bastion-sub {
+  font-size: 0.82em;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+.bastion-sub span[contenteditable] {
+  outline: none;
+  border-bottom: 1px dashed transparent;
+  padding: 1px 4px;
+  cursor: text;
+  color: var(--text);
+}
+.bastion-sub span[contenteditable]:hover,
+.bastion-sub span[contenteditable]:focus { border-color: var(--gold-dim); }
+
+.header-stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.stat-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 72px;
+}
+.stat-pill .label {
+  font-size: 0.65em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+.stat-pill .value {
+  font-size: 1.3em;
+  font-weight: 700;
+  color: var(--gold);
+  font-family: Georgia, serif;
+}
+
+.advance-btn {
+  background: linear-gradient(180deg, var(--gold) 0%, #a88832 100%);
+  color: #1a1200;
+  border: 1px solid var(--gold-dim);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 700;
+  font-size: 0.92em;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  transition: all 0.15s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.advance-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+.advance-btn:active { transform: translateY(0); }
+
+nav.tabs {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+nav.tabs button {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  padding: 12px 18px;
+  font-size: 0.88em;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+nav.tabs button:hover { color: var(--text); }
+nav.tabs button.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+nav.tabs .badge {
+  background: var(--gold);
+  color: #1a1200;
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 0.72em;
+  margin-left: 6px;
+  font-weight: 700;
+}
+
+main {
+  flex: 1;
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.panel { display: none; }
+.panel.active { display: block; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.section-title {
+  font-family: Georgia, serif;
+  font-size: 1.15em;
+  color: var(--gold);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.btn:hover { background: var(--surface3); border-color: var(--gold-dim); }
+.btn.primary { background: var(--gold); color: #1a1200; border-color: var(--gold); }
+.btn.primary:hover { filter: brightness(1.1); }
+.btn.danger { color: var(--red); border-color: var(--border); }
+.btn.danger:hover { background: rgba(179,90,90,0.15); border-color: var(--red); }
+.btn.small { padding: 4px 10px; font-size: 0.78em; }
+
+.grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: var(--gold-dim); }
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-family: Georgia, serif;
+  font-size: 1.08em;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.card-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.badge {
+  font-size: 0.68em;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid transparent;
+}
+.badge-size-cramped { background: rgba(90,139,179,0.15); color: #8ab3d4; border-color: rgba(90,139,179,0.3); }
+.badge-size-roomy { background: rgba(107,158,90,0.15); color: #9ec98a; border-color: rgba(107,158,90,0.3); }
+.badge-size-vast { background: rgba(179,138,90,0.15); color: #d4ae8a; border-color: rgba(179,138,90,0.3); }
+.badge-level { background: rgba(201,168,76,0.1); color: var(--gold); border-color: rgba(201,168,76,0.3); }
+.badge-basic { background: rgba(120,120,120,0.15); color: var(--text-dim); border-color: var(--border); }
+
+.card-desc {
+  font-size: 0.82em;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin: 8px 0;
+}
+
+.order-display {
+  margin-top: 12px;
+  padding: 10px;
+  background: var(--surface2);
+  border-radius: 6px;
+  border-left: 3px solid var(--border);
+}
+
+.order-display.order-Craft { border-left-color: var(--craft); }
+.order-display.order-Empower { border-left-color: var(--empower); }
+.order-display.order-Harvest { border-left-color: var(--harvest); }
+.order-display.order-Maintain { border-left-color: var(--maintain); }
+.order-display.order-Recruit { border-left-color: var(--recruit); }
+.order-display.order-Research { border-left-color: var(--research); }
+.order-display.order-Trade { border-left-color: var(--trade); }
+
+.order-label {
+  font-size: 0.7em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.order-value {
+  font-size: 0.95em;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.order-value .order-type {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.78em;
+  margin-right: 6px;
+}
+.order-Craft .order-type { background: var(--craft); color: #0d1a0a; }
+.order-Empower .order-type { background: var(--empower); color: #1a0d1a; }
+.order-Harvest .order-type { background: var(--harvest); color: #0a1a18; }
+.order-Maintain .order-type { background: var(--maintain); color: #0a121a; }
+.order-Recruit .order-type { background: var(--recruit); color: #1a120a; }
+.order-Research .order-type { background: var(--research); color: #1a180a; }
+.order-Trade .order-type { background: var(--trade); color: #1a0a12; }
+
+.progress-bar {
+  background: var(--surface3);
+  height: 6px;
+  border-radius: 3px;
+  margin-top: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  transition: width 0.4s;
+}
+
+.card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+.empty-state h3 {
+  font-family: Georgia, serif;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  font-size: 1.1em;
+}
+.empty-state p { font-size: 0.88em; margin-bottom: 14px; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(3px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--gold-dim);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 680px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.modal h2 {
+  font-family: Georgia, serif;
+  color: var(--gold);
+  margin-bottom: 16px;
+  font-size: 1.3em;
+}
+
+.modal-close {
+  float: right;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.5em;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+}
+.modal-close:hover { color: var(--text); }
+
+.form-row {
+  margin-bottom: 14px;
+}
+.form-row label {
+  display: block;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.form-row input, .form-row select, .form-row textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 8px 10px;
+  font-size: 0.9em;
+  font-family: inherit;
+}
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+  outline: none;
+  border-color: var(--gold-dim);
+}
+.form-row textarea { min-height: 72px; resize: vertical; line-height: 1.5; }
+
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.facility-picker {
+  max-height: 400px;
+  overflow-y: auto;
+  margin: -4px;
+  padding: 4px;
+}
+
+.facility-option {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.facility-option:hover:not(.locked) {
+  background: var(--surface3);
+  border-color: var(--gold-dim);
+}
+.facility-option.locked { opacity: 0.45; cursor: not-allowed; }
+
+.facility-option-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.facility-option-name {
+  font-family: Georgia, serif;
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 1em;
+}
+
+.facility-option-desc {
+  font-size: 0.82em;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.order-choice {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 0.82em;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  transition: all 0.15s;
+}
+.order-choice:hover { background: var(--surface3); }
+.order-choice.selected.order-Craft { background: var(--craft); color: #0d1a0a; border-color: var(--craft); }
+.order-choice.selected.order-Empower { background: var(--empower); color: #1a0d1a; border-color: var(--empower); }
+.order-choice.selected.order-Harvest { background: var(--harvest); color: #0a1a18; border-color: var(--harvest); }
+.order-choice.selected.order-Maintain { background: var(--maintain); color: #0a121a; border-color: var(--maintain); }
+.order-choice.selected.order-Recruit { background: var(--recruit); color: #1a120a; border-color: var(--recruit); }
+.order-choice.selected.order-Research { background: var(--research); color: #1a180a; border-color: var(--research); }
+.order-choice.selected.order-Trade { background: var(--trade); color: #1a0a12; border-color: var(--trade); }
+
+/* Overview */
+.overview-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.ov-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.ov-card .lbl {
+  font-size: 0.72em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.ov-card .val {
+  font-family: Georgia, serif;
+  font-size: 2em;
+  color: var(--gold);
+  font-weight: 700;
+  line-height: 1;
+}
+.ov-card .sub { font-size: 0.78em; color: var(--text-muted); margin-top: 4px; }
+
+/* Queue / Inventory lists */
+.list-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.list-item-main { flex: 1; min-width: 0; }
+.list-item-name { font-weight: 700; font-size: 0.95em; }
+.list-item-meta {
+  font-size: 0.8em;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.rarity-common { color: #cccccc; }
+.rarity-uncommon { color: #6b9e5a; }
+.rarity-rare { color: #5a8bb3; }
+.rarity-very-rare { color: #8a6ab3; }
+.rarity-legendary { color: #c9a84c; }
+
+.turn-log-entry {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold-dim);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.turn-log-entry h4 {
+  font-family: Georgia, serif;
+  color: var(--gold);
+  font-size: 0.95em;
+  margin-bottom: 6px;
+}
+.turn-log-entry ul { margin-left: 18px; font-size: 0.85em; color: var(--text-dim); line-height: 1.6; }
+
+.defender-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.def-adjust {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 700;
+  font-family: inherit;
+}
+.def-adjust:hover { background: var(--surface3); }
+
+.toggle-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.75em;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: inherit;
+}
+.toggle-btn.on { background: rgba(107,158,90,0.2); color: var(--green); border-color: rgba(107,158,90,0.4); }
+
+/* Franchise styles */
+.franchise-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.franchise-card:hover { border-color: var(--gold-dim); }
+
+.franchise-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.franchise-name {
+  font-family: Georgia, serif;
+  font-size: 1.1em;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.franchise-location {
+  font-size: 0.8em;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.status-pill {
+  font-size: 0.7em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 3px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.status-thriving  { background: rgba(107,158,90,0.2);  color: #9ec98a; border-color: rgba(107,158,90,0.4); }
+.status-stable    { background: rgba(90,139,179,0.2);  color: #8ab3d4; border-color: rgba(90,139,179,0.4); }
+.status-struggling{ background: rgba(179,138,90,0.2);  color: #d4ae8a; border-color: rgba(179,138,90,0.4); }
+.status-closed    { background: rgba(179,90,90,0.2);   color: #d48a8a; border-color: rgba(179,90,90,0.4); }
+
+.franchise-stats {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+  padding: 10px;
+  background: var(--surface2);
+  border-radius: 6px;
+}
+
+.fstat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 70px;
+}
+.fstat .lbl { font-size: 0.65em; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+.fstat .val { font-family: Georgia, serif; font-size: 1.15em; font-weight: 700; color: var(--gold); }
+
+.issue-list { margin-top: 10px; }
+
+.issue-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--surface2);
+  border: 1px solid rgba(179,138,90,0.3);
+  border-left: 3px solid var(--recruit);
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 0.84em;
+  line-height: 1.5;
+}
+.issue-item.resolved {
+  opacity: 0.5;
+  border-left-color: var(--green);
+  text-decoration: line-through;
+}
+.issue-item .issue-text { flex: 1; color: var(--text-dim); }
+.issue-item .issue-turn { font-size: 0.72em; color: var(--text-muted); white-space: nowrap; margin-top: 2px; }
+
+.franchise-income-total {
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.franchise-income-total .big { font-family: Georgia, serif; font-size: 1.6em; font-weight: 700; color: var(--gold); }
+.franchise-income-total .lbl { font-size: 0.78em; color: var(--text-dim); }
+
+.notice {
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.25);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 0.82em;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+/* Bastion Events */
+.bastion-events-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 22px;
+}
+.bastion-events-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.bastion-events-title {
+  font-family: Georgia, serif;
+  font-size: 1.05em;
+  color: var(--gold);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.event-count-badge {
+  font-size: 0.72em;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(179,90,90,0.25);
+  color: #d48a8a;
+  border: 1px solid rgba(179,90,90,0.4);
+}
+.event-count-badge.none {
+  background: rgba(107,158,90,0.2);
+  color: #9ec98a;
+  border-color: rgba(107,158,90,0.4);
+}
+.bastion-event-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 7px;
+  font-size: 0.84em;
+  line-height: 1.5;
+  border: 1px solid transparent;
+}
+.bastion-event-item.severity-low {
+  background: rgba(90,139,179,0.1);
+  border-color: rgba(90,139,179,0.25);
+  border-left: 3px solid var(--maintain);
+}
+.bastion-event-item.severity-medium {
+  background: rgba(179,138,90,0.1);
+  border-color: rgba(179,138,90,0.25);
+  border-left: 3px solid var(--recruit);
+}
+.bastion-event-item.severity-high {
+  background: rgba(179,90,90,0.1);
+  border-color: rgba(179,90,90,0.3);
+  border-left: 3px solid var(--red);
+}
+.bastion-event-item.resolved {
+  opacity: 0.45;
+  border-left-color: var(--green);
+  text-decoration: line-through;
+  background: transparent;
+}
+.event-body { flex: 1; min-width: 0; }
+.event-text { color: var(--text-dim); }
+.event-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.event-cat {
+  font-size: 0.7em;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.event-turn { font-size: 0.7em; color: var(--text-muted); }
+.event-actions { display: flex; gap: 5px; flex-shrink: 0; }
+
+/* ===== MAP ===== */
+.map-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.map-grid-wrapper {
+  overflow: auto;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+.map-grid {
+  position: relative;
+  background-color: #0e0c09;
+  background-image:
+    linear-gradient(rgba(120,100,65,0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120,100,65,0.18) 1px, transparent 1px);
+  border: 3px solid var(--gold-dim);
+  box-shadow: 0 0 40px rgba(0,0,0,0.6), inset 0 0 60px rgba(0,0,0,0.5);
+  cursor: crosshair;
+  user-select: none;
+  flex-shrink: 0;
+}
+.map-facility-tile {
+  position: absolute;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 2;
+  padding: 3px;
+  transition: filter 0.12s;
+  box-sizing: border-box;
+}
+.map-facility-tile:hover { filter: brightness(1.3); }
+.map-facility-tile.selected-tile {
+  z-index: 10;
+  animation: tile-pulse 1.2s ease-in-out infinite alternate;
+}
+@keyframes tile-pulse {
+  from { box-shadow: 0 0 0 2px #fff, 0 0 6px rgba(255,255,255,0.3); }
+  to   { box-shadow: 0 0 0 2px #fff, 0 0 18px rgba(255,255,255,0.7); }
+}
+.tile-icon  { line-height: 1; margin-bottom: 2px; }
+.tile-name  { font-weight: 700; line-height: 1.2; word-break: break-word; hyphens: auto; }
+.map-preview-tile {
+  position: absolute;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 9;
+  transition: background 0.1s;
+}
+.map-preview-tile.ok  { background: rgba(80,200,100,0.18); border: 2px dashed rgba(80,200,100,0.7); }
+.map-preview-tile.bad { background: rgba(200,70,70,0.18);  border: 2px dashed rgba(200,70,70,0.7); }
+.map-sidebar {
+  flex: 1;
+  min-width: 190px;
+  max-width: 250px;
+}
+.map-instr {
+  font-size: 0.8em;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: var(--surface2);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.map-instr.active {
+  background: rgba(201,168,76,0.08);
+  border-color: rgba(201,168,76,0.3);
+  color: var(--gold);
+}
+.unplaced-fac {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  transition: all 0.13s;
+  font-size: 0.84em;
+}
+.unplaced-fac:hover { background: var(--surface3); border-color: var(--gold-dim); }
+.unplaced-fac.sel   { background: rgba(201,168,76,0.12); border-color: var(--gold); }
+.fac-swatch { width: 13px; height: 13px; border-radius: 3px; flex-shrink: 0; }
+.placed-fac-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.82em;
+  margin-bottom: 4px;
+  cursor: pointer;
+  transition: border-color 0.13s;
+}
+.placed-fac-row:hover { border-color: var(--gold-dim); }
+.placed-fac-row.sel   { border-color: var(--gold); }
+.map-section-lbl {
+  font-size: 0.68em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin: 12px 0 5px;
+}
+
+@media (max-width: 700px) {
+  header { gap: 12px; }
+  main { padding: 16px; }
+  .form-grid-2 { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: 1fr; }
+}
+
+* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-area">
+    <div class="bastion-name" contenteditable="true" id="bastionName" spellcheck="false">My Bastion</div>
+    <div class="bastion-sub">
+      Owner: <span contenteditable="true" id="ownerName" spellcheck="false">Unnamed Hero</span> ·
+      Character Level: <span contenteditable="true" id="charLevel">5</span>
+    </div>
+  </div>
+  <div class="header-stats">
+    <div class="stat-pill"><div class="label">Turn</div><div class="value" id="turnCount">1</div></div>
+    <div class="stat-pill"><div class="label">Facilities</div><div class="value" id="facilityCount">0/2</div></div>
+    <div class="stat-pill"><div class="label">Defenders</div><div class="value" id="defenderCount">0</div></div>
+    <div class="stat-pill"><div class="label">Gold</div><div class="value" id="goldCount">0</div></div>
+  </div>
+  <button class="advance-btn" onclick="advanceTurn()">⏭ Advance Turn</button>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="active" data-tab="overview">Overview <span id="eventsBadge" class="badge" style="display:none;background:var(--red);color:#fff">0</span></button>
+  <button data-tab="facilities">Facilities</button>
+  <button data-tab="crafting">Crafting <span id="craftBadge" class="badge" style="display:none">0</span></button>
+  <button data-tab="inventory">Inventory</button>
+  <button data-tab="defenders">Defenders</button>
+  <button data-tab="map">Map</button>
+  <button data-tab="franchises">Franchises <span id="issueBadge" class="badge" style="display:none;background:var(--recruit);color:#1a0d00">0</span></button>
+  <button data-tab="log">Turn Log</button>
+  <button data-tab="settings">Settings</button>
+</nav>
+
+<main>
+  <!-- OVERVIEW -->
+  <section class="panel active" id="panel-overview">
+    <div id="bastionEventsPanel"></div>
+    <div class="overview-stats" id="overviewStats"></div>
+    <div class="section-title">Active Orders This Week</div>
+    <div id="activeOrdersList"></div>
+  </section>
+
+  <!-- FACILITIES -->
+  <section class="panel" id="panel-facilities">
+    <div class="section-title">
+      <span>Your Facilities</span>
+      <button class="btn primary" onclick="openAddFacility()">+ Add Facility</button>
+    </div>
+    <div class="grid" id="facilityGrid"></div>
+  </section>
+
+  <!-- CRAFTING -->
+  <section class="panel" id="panel-crafting">
+    <div class="section-title">
+      <span>Crafting Queue</span>
+      <button class="btn primary" onclick="openAddCraft()">+ New Craft Project</button>
+    </div>
+    <div class="notice">
+      <strong>Craft Order:</strong> In D&D 2024 rules, nonmagical items take <em>(cost ÷ 10)</em> days; a Bastion Turn is 7 days. Potions of Healing take 1 day. Facilities working on Craft cannot perform another order until finished.
+    </div>
+    <div id="craftQueueList"></div>
+    <div class="section-title" style="margin-top:28px">Completed This Bastion</div>
+    <div id="craftCompletedList"></div>
+  </section>
+
+  <!-- INVENTORY -->
+  <section class="panel" id="panel-inventory">
+    <div class="section-title">
+      <span>Bastion Inventory</span>
+      <button class="btn primary" onclick="openAddInventory()">+ Add Item</button>
+    </div>
+    <div class="notice">Track crafted items, harvested resources, stored equipment, and magic items held in the bastion.</div>
+    <div id="inventoryList"></div>
+  </section>
+
+  <!-- DEFENDERS -->
+  <section class="panel" id="panel-defenders">
+    <div class="section-title"><span>Bastion Defense</span></div>
+    <div class="notice">
+      Each Barracks with the <strong>Recruit</strong> order adds 4 Defenders per turn (no cost).
+      During an attack, roll 1d6 per defender — each 1 kills that defender. If your <strong>Armory</strong> is stocked, roll 1d8 instead. Armory stocking costs 100 gp + 100 gp/defender (halved with a Smithy).
+    </div>
+    <div class="grid" id="defenderPanel"></div>
+  </section>
+
+  <!-- MAP -->
+  <section class="panel" id="panel-map">
+    <div class="section-title">
+      <span>Bastion Map</span>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <button class="btn small" onclick="mapZoom(-4)">− Zoom</button>
+        <span id="mapZoomLabel" style="font-size:0.78em;color:var(--text-dim);min-width:30px;text-align:center">32</span>
+        <button class="btn small" onclick="mapZoom(4)">+ Zoom</button>
+        <button class="btn small" onclick="autoArrange()">Auto-Arrange</button>
+        <button class="btn small" onclick="clearMapSel()">Deselect</button>
+      </div>
+    </div>
+    <div class="map-layout">
+      <div class="map-grid-wrapper">
+        <div class="map-grid" id="mapGrid"></div>
+      </div>
+      <div class="map-sidebar" id="mapSidebar"></div>
+    </div>
+  </section>
+
+  <!-- FRANCHISES -->
+  <section class="panel" id="panel-franchises">
+    <div class="section-title">
+      <span>Franchise Businesses</span>
+      <button class="btn primary" onclick="openAddFranchise()">+ Add Franchise</button>
+    </div>
+    <div class="notice">
+      Franchise businesses (taverns, inns, stables, shops) generate gold each Bastion Turn. Each turn may produce <strong>issues</strong> your party needs to resolve — staffing trouble, rival competition, mysterious incidents, and more.
+    </div>
+    <div id="franchiseIncomeSummary"></div>
+    <div id="franchiseList"></div>
+  </section>
+
+  <!-- LOG -->
+  <section class="panel" id="panel-log">
+    <div class="section-title">
+      <span>Turn Log</span>
+      <button class="btn small" onclick="if(confirm('Clear turn log?')){ state.turnLog=[]; save(); render(); }">Clear</button>
+    </div>
+    <div id="turnLogList"></div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="panel" id="panel-settings">
+    <div class="section-title">Settings</div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Gold Tracker</div></div>
+      <div class="form-row">
+        <label>Current Gold (gp)</label>
+        <input type="number" id="goldInput" value="0" onchange="state.gold = +this.value || 0; save(); render();">
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="card-header"><div class="card-title">Bastion Notes</div></div>
+      <div class="form-row">
+        <textarea id="bastionNotes" placeholder="Lore, NPCs, rumors, events..."></textarea>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="card-header"><div class="card-title">Data</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" onclick="exportData()">Export JSON</button>
+        <button class="btn" onclick="document.getElementById('importFile').click()">Import JSON</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+        <button class="btn danger" onclick="if(confirm('Erase everything and reset?')){ localStorage.removeItem('bastionBuilder'); location.reload(); }">Reset Bastion</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="modalRoot"></div>
+
+<script>
+// ========== DATA: D&D 2024 (5.5e) FACILITIES ==========
+const FACILITY_DATA = {
+  basic: [
+    { name: "Bedroom", desc: "Private sleeping quarters. Every bastion needs somewhere to rest." },
+    { name: "Parlor", desc: "Comfortable meeting space for guests and small gatherings." },
+    { name: "Courtyard", desc: "Open-air space for training, socializing, and fresh air." },
+    { name: "Kitchen", desc: "Stocked pantry and hearth where hirelings prepare meals." },
+    { name: "Storage", desc: "Basic storage for goods, crates, and supplies." },
+    { name: "Bath", desc: "Washroom with basins or a small pool for cleansing." },
+  ],
+  special: [
+    // Level 5
+    { name:"Arcane Study", level:5, size:"Roomy", orders:["Craft","Research","Empower","Maintain"],
+      desc:"A chamber of tomes, glyphs, and reagents for arcane work.",
+      effect:"After a long rest here, once per week cast Identify without slot or material components. Craft Common or Uncommon Implements (lvl 9+)." },
+    { name:"Armory", level:5, size:"Cramped", orders:["Trade","Maintain"],
+      desc:"A fitted room of racks, pegs, and chests for war gear.",
+      effect:"Stock for 100 gp + 100/defender (halved with Smithy). While stocked, Defenders roll 1d8 instead of 1d6." },
+    { name:"Barrack", level:5, size:"Roomy", orders:["Recruit","Maintain"],
+      desc:"Bunks and common quarters for your Bastion Defenders.",
+      effect:"Recruit order: gain 4 Bastion Defenders (free). Roomy houses up to 12 defenders." },
+    { name:"Garden", level:5, size:"Roomy", orders:["Harvest","Maintain"],
+      desc:"Plots of soil for herbs, vegetables, flowers, or poisons.",
+      effect:"Harvest (7 days): Potion of Healing, Basic Poison (100 gp), flowers, or vegetables. Change type: 21 days." },
+    { name:"Library", level:5, size:"Roomy", orders:["Research","Maintain"],
+      desc:"Shelves of bound knowledge for long-form research.",
+      effect:"Research order yields detailed lore answers from the DM." },
+    { name:"Pub", level:5, size:"Roomy", orders:["Research","Maintain"],
+      desc:"A common room for drink, song, and wagging tongues.",
+      effect:"Gather rumors and street-level information; occasional coin from patrons." },
+    { name:"Sanctuary", level:5, size:"Roomy", orders:["Craft","Empower","Maintain"],
+      desc:"A consecrated hall for prayer and divine focus.",
+      effect:"Grants spiritual empowerments. Craft Common or Uncommon Implements (lvl 9+, req. Holy Symbol/Druidic Focus)." },
+    { name:"Smithy", level:5, size:"Cramped", orders:["Craft","Maintain"],
+      desc:"Forge, anvil, and bellows for metalwork.",
+      effect:"Craft nonmagical weapons and armor. Halves Armory stocking cost. Crafts Common/Uncommon Armaments (lvl 9+)." },
+    { name:"Storehouse", level:5, size:"Cramped", orders:["Trade","Maintain"],
+      desc:"Lockable stockroom for trade goods.",
+      effect:"Trade order generates gp through buying low and selling high." },
+    { name:"Stable", level:5, size:"Roomy", orders:["Trade","Maintain"],
+      desc:"Stalls and paddocks for mounts and beasts of burden.",
+      effect:"Houses mounts (including some exotic). Trade order sells mounts for gp." },
+    { name:"Workshop", level:5, size:"Roomy", orders:["Craft","Maintain"],
+      desc:"Benches, tools, and raw materials for artisan work.",
+      effect:"Craft items using artisan's tools." },
+    // Level 9
+    { name:"Gaming Hall", level:9, size:"Vast", orders:["Trade","Maintain"],
+      desc:"Tables, cards, dice, and other games of chance.",
+      effect:"Generates gp via house earnings each Bastion Turn." },
+    { name:"Greenhouse", level:9, size:"Roomy", orders:["Craft","Harvest","Maintain"],
+      desc:"Glass-paneled hothouse for magical and exotic flora.",
+      effect:"Craft Potions of Healing and other alchemical concoctions; harvest rare herbs." },
+    { name:"Laboratory", level:9, size:"Cramped", orders:["Craft","Maintain"],
+      desc:"Alchemist's bench with distillers, crucibles, and reagents.",
+      effect:"Craft poisons (7 days, half market price) with Alchemist's Supplies." },
+    { name:"Sacristy", level:9, size:"Cramped", orders:["Craft","Empower","Maintain"],
+      desc:"A vestry of consecrated robes, relics, and holy oils.",
+      effect:"Create holy water and other sacred items; empowers divine magic." },
+    { name:"Scriptorium", level:9, size:"Cramped", orders:["Craft","Maintain"],
+      desc:"Writing desks, inks, and vellum for copying works.",
+      effect:"Scribe Cleric/Wizard spell scrolls (lvl ≤ 3). Blank book: 7 days, 10 gp. Book copying: 7 days, 1 gp/copy." },
+    { name:"Teleportation Circle", level:9, size:"Roomy", orders:["Recruit","Empower","Maintain"],
+      desc:"A sigil-etched ritual chamber for long-distance travel.",
+      effect:"Recruit: invite a friendly spellcaster to visit; request a Wizard spell (lvl ≤ 4, lvl 8 at 17+)." },
+    { name:"Theater", level:9, size:"Vast", orders:["Trade","Maintain"],
+      desc:"A stage and seating for performances of all kinds.",
+      effect:"Earn gp through ticketed shows and patronage." },
+    { name:"Training Area", level:9, size:"Roomy", orders:["Empower","Maintain"],
+      desc:"Sparring pits, targets, and drills for honing skills.",
+      effect:"Empowers defenders or grants training benefits to residents." },
+    { name:"Trophy Room", level:9, size:"Roomy", orders:["Research","Empower","Maintain"],
+      desc:"Displays of your hard-won victories and trinkets.",
+      effect:"Research order lets you recall lore tied to displayed trophies." },
+    // Level 13
+    { name:"Archive", level:13, size:"Roomy", orders:["Research","Maintain"],
+      desc:"A vault of indexed and warded records.",
+      effect:"Access to extensive historical and magical knowledge for Research." },
+    { name:"Meditation Chamber", level:13, size:"Cramped", orders:["Empower","Maintain"],
+      desc:"A silent room of cushions, incense, and focus.",
+      effect:"Inner Peace: Roll twice for next Bastion event and choose. Long rest: advantage on two save types for a week." },
+    { name:"Menagerie", level:13, size:"Vast", orders:["Recruit","Trade","Maintain"],
+      desc:"Enclosures for exotic beasts and companions.",
+      effect:"Houses beasts; Recruit order may gain a beast ally." },
+    { name:"Observatory", level:13, size:"Roomy", orders:["Empower","Research","Maintain"],
+      desc:"Telescope and astrolabe for reading the stars.",
+      effect:"Portents and divinations; empowers divination magic." },
+    { name:"Reliquary", level:13, size:"Cramped", orders:["Empower","Maintain"],
+      desc:"A shrine for saints' relics and wondrous artifacts.",
+      effect:"After a long rest, once per week cast Greater Restoration without slot or components. Req. Holy Symbol/Druidic Focus." },
+    // Level 17
+    { name:"Demiplane", level:17, size:"Vast", orders:["Empower","Craft","Maintain"],
+      desc:"A pocket dimension bound to your bastion.",
+      effect:"Empower: Arcane Resilience for 7 days. After long rest, gain Temp HP = 5 × your level." },
+    { name:"Guildhall", level:17, size:"Vast", orders:["Trade","Recruit","Maintain"],
+      desc:"Headquarters for your chartered organization.",
+      effect:"Generates steady income; recruits specialized agents." },
+    { name:"Sanctum", level:17, size:"Roomy", orders:["Empower","Research","Maintain"],
+      desc:"Your private seat of power, warded against intrusion.",
+      effect:"A personalized stronghold facility with potent empowerments." },
+    { name:"War Room", level:17, size:"Roomy", orders:["Research","Empower","Maintain"],
+      desc:"Map table, field reports, and strategic models.",
+      effect:"Plan campaigns; gain advantage on battle-related checks." },
+  ]
+};
+
+const ORDER_DEFS = {
+  Craft:    "Make items specific to this facility (takes days per standard rules).",
+  Empower:  "Gain this facility's special 7-day empowerment.",
+  Harvest:  "Gather resources produced by this facility (typically 7 days).",
+  Maintain: "Keep things running. Default order if you don't visit this week.",
+  Recruit:  "Bring on defenders, guests, or specialized staff.",
+  Research: "Hirelings dig into archives to answer a question.",
+  Trade:    "Buy or sell nonmagical goods through this facility.",
+};
+
+// ========== STATE ==========
+const DEFAULT_STATE = {
+  bastionName: "My Bastion",
+  ownerName: "Unnamed Hero",
+  charLevel: 5,
+  turn: 1,
+  gold: 0,
+  notes: "",
+  facilities: [],   // {id, name, type('basic'|'special'), size, level, orders, desc, effect, currentOrder, orderDetail, active}
+  craftQueue: [],   // {id, facilityId, itemName, itemType, rarity, totalDays, daysDone, notes, startedTurn, completedTurn}
+  inventory: [],    // {id, name, qty, category, notes}
+  turnLog: [],      // {turn, events:[]}
+  franchises: [],   // {id, name, type, status, location, notes, totalEarned, startTurn, issues:[]}
+  bastionEvents: [], // {id, text, category, turn, resolved, severity}
+  bastionMap: { placements: [] }, // {facilityId, x, y}
+};
+
+let state = load();
+
+function load() {
+  try {
+    const raw = localStorage.getItem('bastionBuilder');
+    if (!raw) return structuredClone(DEFAULT_STATE);
+    const parsed = JSON.parse(raw);
+    return { ...structuredClone(DEFAULT_STATE), ...parsed };
+  } catch {
+    return structuredClone(DEFAULT_STATE);
+  }
+}
+
+function save() {
+  localStorage.setItem('bastionBuilder', JSON.stringify(state));
+}
+
+function uid() { return Math.random().toString(36).slice(2, 10); }
+
+// ========== RENDERING ==========
+function render() {
+  // Header fields
+  document.getElementById('bastionName').textContent = state.bastionName;
+  document.getElementById('ownerName').textContent = state.ownerName;
+  document.getElementById('charLevel').textContent = state.charLevel;
+  document.getElementById('turnCount').textContent = state.turn;
+  const usedSlots = usedSpecialFacilities();
+  const maxSlots = maxSpecialFacilities(state.charLevel);
+  const facEl = document.getElementById('facilityCount');
+  facEl.textContent = `${usedSlots}/${maxSlots}`;
+  facEl.style.color = usedSlots >= maxSlots ? 'var(--red)' : 'var(--gold)';
+  document.getElementById('defenderCount').textContent = state.facilities.reduce((a,f)=>a+(f.defenders||0),0);
+  document.getElementById('goldCount').textContent = state.gold;
+
+  // Settings inputs
+  document.getElementById('goldInput').value = state.gold;
+  document.getElementById('bastionNotes').value = state.notes || "";
+
+  // Crafting badge
+  const active = state.craftQueue.filter(c=>!c.completedTurn).length;
+  const badge = document.getElementById('craftBadge');
+  if (active > 0) { badge.style.display = 'inline-block'; badge.textContent = active; }
+  else { badge.style.display = 'none'; }
+
+  renderBastionEvents();
+  renderMap();
+  renderOverview();
+  renderFacilities();
+  renderCrafting();
+  renderInventory();
+  renderDefenders();
+  renderFranchises();
+  renderLog();
+}
+
+function renderOverview() {
+  const el = document.getElementById('overviewStats');
+  const specials = state.facilities.filter(f=>f.type==='special').length;
+  const crafting = state.craftQueue.filter(c=>!c.completedTurn).length;
+  const defenders = state.facilities.reduce((a,f)=>a+(f.defenders||0),0);
+  const inventoryItems = state.inventory.reduce((a,i)=>a+(i.qty||1),0);
+  el.innerHTML = `
+    <div class="ov-card"><div class="lbl">Current Bastion Turn</div><div class="val">${state.turn}</div><div class="sub">Week ${state.turn} · ${(state.turn-1)*7} days passed</div></div>
+    <div class="ov-card"><div class="lbl">Special Facilities</div><div class="val">${specials}</div><div class="sub">Unlocked at level ${state.charLevel}</div></div>
+    <div class="ov-card"><div class="lbl">In Production</div><div class="val">${crafting}</div><div class="sub">Craft / Harvest projects</div></div>
+    <div class="ov-card"><div class="lbl">Defenders</div><div class="val">${defenders}</div><div class="sub">Across all barracks</div></div>
+    <div class="ov-card"><div class="lbl">Inventory</div><div class="val">${inventoryItems}</div><div class="sub">${state.inventory.length} distinct items</div></div>
+    <div class="ov-card"><div class="lbl">Treasury</div><div class="val">${state.gold}</div><div class="sub">gold pieces</div></div>
+  `;
+
+  // Active orders
+  const ordList = document.getElementById('activeOrdersList');
+  const ordered = state.facilities.filter(f=>f.type==='special' && f.currentOrder);
+  if (ordered.length === 0) {
+    ordList.innerHTML = `<div class="empty-state"><h3>No orders issued</h3><p>Set an order on each facility from the Facilities tab.</p></div>`;
+  } else {
+    ordList.innerHTML = ordered.map(f => {
+      const activeCrafts = state.craftQueue.filter(c=>c.facilityId===f.id && !c.completedTurn);
+      let progressHtml = '';
+      if (f.currentOrder === 'Craft' && activeCrafts.length) {
+        progressHtml = activeCrafts.map(c=>{
+          const pct = Math.min(100, Math.round((c.daysDone / c.totalDays) * 100));
+          return `<div style="margin-top:8px">
+            <div style="display:flex;justify-content:space-between;font-size:0.82em"><span>${c.itemName}</span><span style="color:var(--text-dim)">${c.daysDone}/${c.totalDays}d</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+          </div>`;
+        }).join('');
+      }
+      return `<div class="order-display order-${f.currentOrder}" style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <div><div class="order-label">${f.name}</div>
+          <div class="order-value"><span class="order-type">${f.currentOrder}</span>${f.orderDetail||''}</div></div>
+          <button class="btn small" onclick="goTo('facilities'); setTimeout(()=>document.getElementById('fac-${f.id}')?.scrollIntoView({behavior:'smooth',block:'center'}),50)">Manage</button>
+        </div>${progressHtml}
+      </div>`;
+    }).join('');
+  }
+}
+
+function renderFacilities() {
+  // Update Add Facility button label with slot count
+  const addBtn = document.querySelector('#panel-facilities .section-title .btn.primary');
+  if (addBtn) {
+    const u = usedSpecialFacilities(), m = maxSpecialFacilities(state.charLevel);
+    addBtn.textContent = u >= m ? `Slots Full (${u}/${m})` : `+ Add Facility (${u}/${m})`;
+    addBtn.style.opacity = u >= m ? '0.55' : '1';
+  }
+
+  const el = document.getElementById('facilityGrid');
+  if (!state.facilities.length) {
+    const m = maxSpecialFacilities(state.charLevel);
+    el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><h3>Your Bastion stands empty</h3><p>You have ${m} special facility slot${m!==1?'s':''} at level ${state.charLevel}. Add your first to begin.</p><button class="btn primary" onclick="openAddFacility()">+ Add Facility</button></div>`;
+    return;
+  }
+  const sortedFacs = [...state.facilities].sort((a,b)=>{
+    if (a.type !== b.type) return a.type === 'special' ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  });
+  el.innerHTML = sortedFacs.map(f => {
+    const activeCrafts = state.craftQueue.filter(c=>c.facilityId===f.id && !c.completedTurn);
+    let craftHtml = '';
+    if (activeCrafts.length) {
+      craftHtml = '<div style="margin-top:10px">' + activeCrafts.map(c=>{
+        const pct = Math.min(100, Math.round((c.daysDone / c.totalDays) * 100));
+        return `<div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:0.8em"><span>🛠 ${c.itemName}</span><span style="color:var(--text-dim)">${c.daysDone}/${c.totalDays}d</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        </div>`;
+      }).join('') + '</div>';
+    }
+    const sizeBadge = f.size ? `<span class="badge badge-size-${f.size.toLowerCase()}">${f.size}</span>` : '';
+    const levelBadge = f.type === 'special' ? `<span class="badge badge-level">Lvl ${f.level}+</span>` : '<span class="badge badge-basic">Basic</span>';
+    const orderShow = f.currentOrder ? `<div class="order-display order-${f.currentOrder}">
+      <div class="order-label">Current Order</div>
+      <div class="order-value"><span class="order-type">${f.currentOrder}</span>${f.orderDetail ? f.orderDetail : ''}</div>
+    </div>` : (f.type === 'special' ? `<div class="order-display"><div class="order-label">No Order Set</div><div style="font-size:0.85em;color:var(--text-dim)">Defaults to Maintain</div></div>` : '');
+    const orderBtns = f.type === 'special' ? `<button class="btn small" onclick="openOrderPicker('${f.id}')">Set Order</button>` : '';
+    const barracksBtn = f.name === 'Barrack' ? `<button class="btn small" onclick="adjustDefenders('${f.id}',4)">+4 Defenders</button>` : '';
+    const craftBtn = (f.orders||[]).includes('Craft') ? `<button class="btn small" onclick="openAddCraft('${f.id}')">+ Craft</button>` : '';
+    const harvestBtn = (f.orders||[]).includes('Harvest') && f.currentOrder === 'Harvest' ? `<button class="btn small" onclick="completeHarvest('${f.id}')">Resolve Harvest</button>` : '';
+    return `<div class="card" id="fac-${f.id}">
+      <div class="card-header">
+        <div>
+          <div class="card-title">${f.name}</div>
+          <div class="card-meta">${levelBadge} ${sizeBadge}</div>
+        </div>
+        <button class="btn small danger" onclick="removeFacility('${f.id}')" title="Remove">✕</button>
+      </div>
+      <div class="card-desc">${f.desc||''}</div>
+      ${f.effect ? `<div style="font-size:0.78em;color:var(--text-dim);line-height:1.5;padding:8px;background:var(--surface2);border-radius:6px;margin-top:6px"><strong style="color:var(--gold)">Effect:</strong> ${f.effect}</div>` : ''}
+      ${orderShow}
+      ${craftHtml}
+      <div class="card-actions">
+        ${orderBtns}
+        ${craftBtn}
+        ${harvestBtn}
+        ${barracksBtn}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCrafting() {
+  const active = state.craftQueue.filter(c=>!c.completedTurn);
+  const done = state.craftQueue.filter(c=>c.completedTurn);
+
+  const actEl = document.getElementById('craftQueueList');
+  if (!active.length) {
+    actEl.innerHTML = `<div class="empty-state"><h3>Nothing in production</h3><p>Add a new craft project and assign it to a facility.</p></div>`;
+  } else {
+    actEl.innerHTML = active.map(c => {
+      const fac = state.facilities.find(f=>f.id===c.facilityId);
+      const pct = Math.min(100, Math.round((c.daysDone / c.totalDays) * 100));
+      return `<div class="list-item">
+        <div class="list-item-main">
+          <div class="list-item-name">${c.itemName} <span class="rarity-${c.rarity.replace(/\s+/g,'-')}" style="font-size:0.8em">(${c.rarity})</span></div>
+          <div class="list-item-meta">${c.itemType||'Item'} · ${fac ? fac.name : 'No facility'} · ${c.daysDone}/${c.totalDays} days</div>
+          <div class="progress-bar" style="margin-top:6px"><div class="progress-fill" style="width:${pct}%"></div></div>
+          ${c.notes ? `<div style="font-size:0.78em;color:var(--text-muted);margin-top:4px">${c.notes}</div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <button class="btn small" onclick="adjustCraftDays('${c.id}',7)" title="+1 week">+7d</button>
+          <button class="btn small" onclick="adjustCraftDays('${c.id}',1)" title="+1 day">+1d</button>
+          <button class="btn small" onclick="completeCraft('${c.id}')" title="Mark done">✓</button>
+          <button class="btn small danger" onclick="removeCraft('${c.id}')">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  const doneEl = document.getElementById('craftCompletedList');
+  if (!done.length) {
+    doneEl.innerHTML = `<div style="font-size:0.85em;color:var(--text-muted);padding:12px 4px">No completed projects yet.</div>`;
+  } else {
+    doneEl.innerHTML = done.slice().reverse().map(c => {
+      const fac = state.facilities.find(f=>f.id===c.facilityId);
+      return `<div class="list-item">
+        <div class="list-item-main">
+          <div class="list-item-name">✓ ${c.itemName} <span class="rarity-${c.rarity.replace(/\s+/g,'-')}" style="font-size:0.8em">(${c.rarity})</span></div>
+          <div class="list-item-meta">${fac ? fac.name : '—'} · completed Turn ${c.completedTurn}</div>
+        </div>
+        <button class="btn small danger" onclick="removeCraft('${c.id}')">✕</button>
+      </div>`;
+    }).join('');
+  }
+}
+
+function renderInventory() {
+  const el = document.getElementById('inventoryList');
+  if (!state.inventory.length) {
+    el.innerHTML = `<div class="empty-state"><h3>Empty inventory</h3><p>Completed crafts and harvests appear here. You can also add items manually.</p></div>`;
+    return;
+  }
+  const byCat = {};
+  state.inventory.forEach(i => {
+    const c = i.category || 'Misc';
+    (byCat[c] ||= []).push(i);
+  });
+  el.innerHTML = Object.keys(byCat).sort().map(cat => `
+    <div style="margin-bottom:18px">
+      <div style="font-size:0.78em;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);font-weight:700;margin-bottom:8px">${cat}</div>
+      ${byCat[cat].map(i => `<div class="list-item">
+        <div class="list-item-main">
+          <div class="list-item-name">${i.name}</div>
+          ${i.notes ? `<div class="list-item-meta">${i.notes}</div>` : ''}
+        </div>
+        <div class="defender-count">
+          <button class="def-adjust" onclick="adjustInventory('${i.id}',-1)">−</button>
+          <span style="font-family:Georgia,serif;font-size:1.1em;font-weight:700;color:var(--gold);min-width:30px;text-align:center">${i.qty}</span>
+          <button class="def-adjust" onclick="adjustInventory('${i.id}',1)">+</button>
+          <button class="btn small danger" onclick="removeInventory('${i.id}')">✕</button>
+        </div>
+      </div>`).join('')}
+    </div>
+  `).join('');
+}
+
+function renderDefenders() {
+  const el = document.getElementById('defenderPanel');
+  const barracks = state.facilities.filter(f=>f.name==='Barrack');
+  const armory = state.facilities.find(f=>f.name==='Armory');
+  const smithy = state.facilities.find(f=>f.name==='Smithy');
+  const total = state.facilities.reduce((a,f)=>a+(f.defenders||0),0);
+
+  let armoryCard = '';
+  if (armory) {
+    const cost = (100 + 100 * total) / (smithy ? 2 : 1);
+    armoryCard = `<div class="card">
+      <div class="card-header"><div class="card-title">Armory</div></div>
+      <div class="card-desc">Stock cost to equip all ${total} defenders: <strong style="color:var(--gold)">${cost} gp</strong>${smithy ? ' (halved by Smithy)':''}.</div>
+      <div class="card-actions">
+        <button class="toggle-btn ${armory.armoryStocked ? 'on':''}" onclick="toggleArmory('${armory.id}')">${armory.armoryStocked ? '✓ Stocked (1d8 rolls)':'Not Stocked (1d6 rolls)'}</button>
+      </div>
+    </div>`;
+  }
+
+  if (!barracks.length) {
+    el.innerHTML = armoryCard + `<div class="empty-state" style="grid-column:1/-1"><h3>No Barracks</h3><p>Add a Barrack facility to recruit defenders.</p></div>`;
+    return;
+  }
+
+  el.innerHTML = armoryCard + barracks.map(b => `<div class="card">
+    <div class="card-header"><div class="card-title">${b.name}</div><div class="card-meta"><span class="badge badge-size-${(b.size||'Roomy').toLowerCase()}">${b.size||'Roomy'}</span></div></div>
+    <div class="card-desc">Defenders barracked here.</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+      <div class="defender-count">
+        <button class="def-adjust" onclick="adjustDefenders('${b.id}',-1)">−</button>
+        <span style="font-family:Georgia,serif;font-size:1.6em;font-weight:700;color:var(--gold);min-width:40px;text-align:center">${b.defenders||0}</span>
+        <button class="def-adjust" onclick="adjustDefenders('${b.id}',1)">+</button>
+      </div>
+      <button class="btn small" onclick="adjustDefenders('${b.id}',4)">+4 (Recruit)</button>
+    </div>
+  </div>`).join('');
+}
+
+function renderLog() {
+  const el = document.getElementById('turnLogList');
+  if (!state.turnLog.length) {
+    el.innerHTML = `<div class="empty-state"><h3>No turns recorded</h3><p>Click "Advance Turn" after setting orders to log results.</p></div>`;
+    return;
+  }
+  el.innerHTML = state.turnLog.slice().reverse().map(t => `
+    <div class="turn-log-entry">
+      <h4>Bastion Turn ${t.turn}</h4>
+      <ul>${t.events.map(e=>`<li>${e}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+// ========== FACILITY SLOT RULES (D&D 2024) ==========
+// Lvl 5: 2 slots | Lvl 9: +2 (4 total) | Lvl 13: +1 (5 total) | Lvl 17: +1 (6 total)
+function maxSpecialFacilities(level) {
+  const lvl = +level || 1;
+  if (lvl < 5)  return 0;
+  if (lvl < 9)  return 2;
+  if (lvl < 13) return 4;
+  if (lvl < 17) return 5;
+  return 6;
+}
+
+function usedSpecialFacilities() {
+  return state.facilities.filter(f => f.type === 'special').length;
+}
+
+// ========== ACTIONS ==========
+function addFacility(facDef, type) {
+  if (type === 'special') {
+    const max = maxSpecialFacilities(state.charLevel);
+    if (usedSpecialFacilities() >= max) {
+      alert(`You've used all ${max} special facility slots for level ${state.charLevel}. Increase your character level to unlock more.`);
+      return;
+    }
+    if ((facDef.level || 1) > (+state.charLevel || 1)) {
+      alert(`${facDef.name} requires character level ${facDef.level}.`);
+      return;
+    }
+  }
+  const orders = type === 'special' ? (facDef.orders || ['Maintain']) : [];
+  state.facilities.push({
+    id: uid(),
+    name: facDef.name,
+    type,
+    size: facDef.size,
+    level: facDef.level,
+    desc: facDef.desc,
+    effect: facDef.effect,
+    orders,
+    currentOrder: type === 'special' ? 'Maintain' : null,
+    orderDetail: '',
+    defenders: 0,
+    armoryStocked: false,
+  });
+  save(); render();
+}
+
+function removeFacility(id) {
+  if (!confirm('Remove this facility?')) return;
+  state.facilities = state.facilities.filter(f=>f.id!==id);
+  state.craftQueue = state.craftQueue.filter(c=>c.facilityId!==id);
+  save(); render();
+}
+
+function setOrder(facId, order, detail='') {
+  const f = state.facilities.find(x=>x.id===facId);
+  if (!f) return;
+  f.currentOrder = order;
+  f.orderDetail = detail;
+  save(); render();
+}
+
+function adjustDefenders(facId, delta) {
+  const f = state.facilities.find(x=>x.id===facId);
+  if (!f) return;
+  f.defenders = Math.max(0, (f.defenders||0) + delta);
+  save(); render();
+}
+
+function toggleArmory(facId) {
+  const f = state.facilities.find(x=>x.id===facId);
+  if (!f) return;
+  f.armoryStocked = !f.armoryStocked;
+  save(); render();
+}
+
+function adjustCraftDays(craftId, delta) {
+  const c = state.craftQueue.find(x=>x.id===craftId);
+  if (!c) return;
+  c.daysDone = Math.max(0, Math.min(c.totalDays, c.daysDone + delta));
+  if (c.daysDone >= c.totalDays) completeCraft(craftId);
+  else { save(); render(); }
+}
+
+function completeCraft(craftId) {
+  const c = state.craftQueue.find(x=>x.id===craftId);
+  if (!c) return;
+  c.daysDone = c.totalDays;
+  c.completedTurn = state.turn;
+  // Auto-add to inventory
+  const existing = state.inventory.find(i => i.name === c.itemName && i.category === categoryFor(c.itemType));
+  if (existing) existing.qty += 1;
+  else state.inventory.push({
+    id: uid(), name: c.itemName, qty: 1,
+    category: categoryFor(c.itemType),
+    notes: c.rarity !== 'common' ? c.rarity : ''
+  });
+  // Clear facility order if it was Craft with nothing else left
+  const fac = state.facilities.find(f=>f.id===c.facilityId);
+  if (fac) {
+    const remaining = state.craftQueue.filter(x=>x.facilityId===fac.id && !x.completedTurn && x.id !== c.id);
+    if (!remaining.length && fac.currentOrder === 'Craft') {
+      fac.currentOrder = 'Maintain';
+      fac.orderDetail = '';
+    }
+  }
+  save(); render();
+}
+
+function categoryFor(type) {
+  const t = (type||'').toLowerCase();
+  if (t.includes('potion') || t.includes('healing')) return 'Potions';
+  if (t.includes('scroll')) return 'Scrolls';
+  if (t.includes('weapon')) return 'Weapons';
+  if (t.includes('armor') || t.includes('shield')) return 'Armor';
+  if (t.includes('poison')) return 'Poisons';
+  if (t.includes('herb') || t.includes('flower') || t.includes('vegetable')) return 'Harvest';
+  if (t.includes('book')) return 'Books';
+  return 'Magic Items';
+}
+
+function removeCraft(craftId) {
+  state.craftQueue = state.craftQueue.filter(c=>c.id!==craftId);
+  save(); render();
+}
+
+function completeHarvest(facId) {
+  const f = state.facilities.find(x=>x.id===facId);
+  if (!f) return;
+  const kind = prompt('Harvest what? (Potion of Healing, Basic Poison, Herb, Flower, Vegetable)', 'Potion of Healing');
+  if (!kind) return;
+  const existing = state.inventory.find(i => i.name === kind);
+  if (existing) existing.qty += 1;
+  else state.inventory.push({ id: uid(), name: kind, qty: 1, category: 'Harvest', notes: `From ${f.name}` });
+  logEvent(`🌿 Harvested ${kind} from ${f.name}`);
+  save(); render();
+}
+
+function adjustInventory(id, delta) {
+  const item = state.inventory.find(i=>i.id===id);
+  if (!item) return;
+  item.qty = Math.max(0, (item.qty||0) + delta);
+  if (item.qty === 0) state.inventory = state.inventory.filter(i=>i.id!==id);
+  save(); render();
+}
+
+function removeInventory(id) {
+  state.inventory = state.inventory.filter(i=>i.id!==id);
+  save(); render();
+}
+
+function logEvent(msg) {
+  const last = state.turnLog[state.turnLog.length-1];
+  if (last && last.turn === state.turn) last.events.push(msg);
+  else state.turnLog.push({ turn: state.turn, events: [msg] });
+}
+
+// ========== TURN ADVANCE ==========
+function advanceTurn() {
+  const events = [];
+  // Process each special facility's current order
+  state.facilities.filter(f=>f.type==='special').forEach(f => {
+    const ord = f.currentOrder || 'Maintain';
+    if (ord === 'Craft') {
+      const active = state.craftQueue.filter(c=>c.facilityId===f.id && !c.completedTurn);
+      if (!active.length) {
+        events.push(`🛠 ${f.name}: Craft order set but no project queued.`);
+      } else {
+        active.forEach(c => {
+          c.daysDone = Math.min(c.totalDays, c.daysDone + 7);
+          if (c.daysDone >= c.totalDays) {
+            c.completedTurn = state.turn + 1;
+            const existing = state.inventory.find(i => i.name === c.itemName && i.category === categoryFor(c.itemType));
+            if (existing) existing.qty += 1;
+            else state.inventory.push({
+              id: uid(), name: c.itemName, qty: 1,
+              category: categoryFor(c.itemType),
+              notes: c.rarity !== 'common' ? c.rarity : ''
+            });
+            events.push(`✓ ${f.name}: Crafted <strong>${c.itemName}</strong>.`);
+          } else {
+            events.push(`🛠 ${f.name}: +7 days on ${c.itemName} (${c.daysDone}/${c.totalDays}).`);
+          }
+        });
+      }
+    } else if (ord === 'Harvest') {
+      let yielded = 'a harvest';
+      if (f.name === 'Garden') yielded = 'Potion of Healing or Basic Poison (DM choice)';
+      if (f.name === 'Greenhouse') yielded = 'a rare herb / reagent';
+      const choice = f.orderDetail || yielded;
+      state.inventory.push({ id: uid(), name: choice, qty: 1, category: 'Harvest', notes: `From ${f.name}` });
+      events.push(`🌿 ${f.name}: Harvested ${choice}.`);
+    } else if (ord === 'Recruit' && f.name === 'Barrack') {
+      f.defenders = (f.defenders||0) + 4;
+      events.push(`🛡 ${f.name}: +4 Defenders recruited (total ${f.defenders}).`);
+    } else if (ord === 'Recruit') {
+      events.push(`👥 ${f.name}: Recruit order issued — see DM for result.`);
+    } else if (ord === 'Research') {
+      events.push(`📜 ${f.name}: Research underway — ask DM for findings.`);
+    } else if (ord === 'Empower') {
+      events.push(`✨ ${f.name}: Empowerment active for 7 days.`);
+    } else if (ord === 'Trade') {
+      events.push(`💰 ${f.name}: Trade order — roll for earnings/stock per DM.`);
+    } else if (ord === 'Maintain') {
+      events.push(`🔧 ${f.name}: Maintained.`);
+    }
+  });
+
+  // Roll for a bastion event
+  const bastionEvent = rollBastionEvent();
+  if (bastionEvent) {
+    (state.bastionEvents = state.bastionEvents || []).push({
+      id: uid(),
+      text: bastionEvent.text,
+      cat: bastionEvent.cat,
+      severity: bastionEvent.severity,
+      turn: state.turn,
+      resolved: false,
+    });
+    events.push(`🏰 Bastion Event (${bastionEvent.severity}): "${bastionEvent.text.slice(0, 70)}…"`);
+  }
+
+  state.turn += 1;
+  state.turnLog.push({ turn: state.turn - 1, events: events.length ? events : ['(No special facilities to issue orders.)'] });
+  save(); render();
+
+  // Switch to overview so they see the new event immediately
+  goTo('overview');
+}
+
+// ========== MODALS ==========
+function modal(html) {
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`;
+}
+function closeModal() { document.getElementById('modalRoot').innerHTML = ''; }
+
+function openAddFacility() {
+  const level = +state.charLevel || 5;
+  const used = usedSpecialFacilities();
+  const max = maxSpecialFacilities(level);
+  const slotsLeft = max - used;
+  const atCap = slotsLeft <= 0;
+
+  // Slot breakdown callout
+  const slotBreakdown = `<div style="font-size:0.8em;line-height:1.6;margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px">
+        <span style="color:var(--text-dim)">Slots used:</span>
+        <strong style="color:${atCap?'var(--red)':'var(--gold)'}"> ${used} / ${max}</strong>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px">
+        <span style="color:var(--text-dim)">Lvl 5:</span> <strong style="color:var(--text)">2</strong>
+        &nbsp;·&nbsp;<span style="color:var(--text-dim)">Lvl 9:</span> <strong style="color:var(--text)">4</strong>
+        &nbsp;·&nbsp;<span style="color:var(--text-dim)">Lvl 13:</span> <strong style="color:var(--text)">5</strong>
+        &nbsp;·&nbsp;<span style="color:var(--text-dim)">Lvl 17:</span> <strong style="color:var(--text)">6</strong>
+      </div>
+    </div>
+    ${atCap ? `<div style="margin-top:8px;color:var(--red);font-weight:600">⛔ All ${max} special facility slots are filled. Raise your character level to unlock more, or remove an existing facility first.</div>` : `<div style="margin-top:6px;color:var(--text-dim)">${slotsLeft} slot${slotsLeft!==1?'s':''} remaining. Basic facilities are always free.</div>`}
+  </div>`;
+
+  const specialOpts = FACILITY_DATA.special.map(f => {
+    const levelLocked = f.level > level;
+    const slotLocked = atCap;
+    const locked = levelLocked || slotLocked;
+    const lockReason = levelLocked
+      ? `🔒 Requires character level ${f.level}`
+      : slotLocked
+        ? `⛔ No slots remaining (${used}/${max} used)`
+        : '';
+    return `<div class="facility-option ${locked?'locked':''}" ${locked?'':`onclick="addFacility(${JSON.stringify(f).replace(/"/g,'&quot;')},'special'); closeModal();"`}>
+      <div class="facility-option-header">
+        <div class="facility-option-name">${f.name}</div>
+        <div class="card-meta"><span class="badge badge-level">Lvl ${f.level}+</span><span class="badge badge-size-${f.size.toLowerCase()}">${f.size}</span></div>
+      </div>
+      <div class="facility-option-desc">${f.desc}</div>
+      <div class="card-meta" style="margin-top:8px">${f.orders.map(o=>`<span class="badge" style="background:var(--surface3);color:var(--text-dim)">${o}</span>`).join('')}</div>
+      ${lockReason ? `<div style="font-size:0.78em;color:var(--red);margin-top:6px">${lockReason}</div>`:''}
+    </div>`;
+  }).join('');
+
+  const basicOpts = FACILITY_DATA.basic.map(f => `<div class="facility-option" onclick="addFacility(${JSON.stringify(f).replace(/"/g,'&quot;')},'basic'); closeModal();">
+    <div class="facility-option-header">
+      <div class="facility-option-name">${f.name}</div>
+      <span class="badge badge-basic">Basic</span>
+    </div>
+    <div class="facility-option-desc">${f.desc}</div>
+  </div>`).join('');
+
+  modal(`
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h2>Add Facility</h2>
+    ${slotBreakdown}
+    <div style="font-size:0.75em;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);font-weight:700;margin-bottom:8px">Special Facilities</div>
+    <div class="facility-picker">${specialOpts}</div>
+    <div style="font-size:0.75em;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);font-weight:700;margin:18px 0 8px">Basic Facilities</div>
+    <div class="facility-picker">${basicOpts}</div>
+  `);
+}
+
+function openOrderPicker(facId) {
+  const f = state.facilities.find(x=>x.id===facId);
+  if (!f) return;
+  const orders = f.orders && f.orders.length ? f.orders : ['Maintain'];
+  modal(`
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h2>${f.name}: Set Order</h2>
+    <div class="orders-grid">
+      ${orders.map(o=>`<button class="order-choice order-${o} ${f.currentOrder===o?'selected':''}" onclick="setOrder('${facId}','${o}'); closeModal();">${o}</button>`).join('')}
+    </div>
+    <div style="margin-top:14px;font-size:0.82em;color:var(--text-dim);line-height:1.6">
+      ${orders.map(o=>`<div style="margin-bottom:6px"><strong style="color:var(--text)">${o}:</strong> ${ORDER_DEFS[o]}</div>`).join('')}
+    </div>
+    <div class="form-row" style="margin-top:14px">
+      <label>Order Detail (optional)</label>
+      <input type="text" id="orderDetailInput" value="${f.orderDetail||''}" placeholder="e.g. specific item, research topic">
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="setOrder('${facId}', document.querySelector('.order-choice.selected')?.textContent || '${f.currentOrder||'Maintain'}', document.getElementById('orderDetailInput').value); closeModal();">Save Detail</button>
+    </div>
+  `);
+  // Handle selection highlighting
+  document.querySelectorAll('.orders-grid .order-choice').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.orders-grid .order-choice').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      e.stopImmediatePropagation();
+    }, true);
+  });
+}
+
+function openAddCraft(facId) {
+  const craftFacs = state.facilities.filter(f=>f.type==='special' && (f.orders||[]).includes('Craft'));
+  if (!craftFacs.length) {
+    alert('No facilities support the Craft order. Add a Smithy, Arcane Study, Workshop, Greenhouse, etc.');
+    return;
+  }
+  const presets = [
+    { name: "Potion of Healing", type: "Potion", rarity: "common", days: 1, gp: 50 },
+    { name: "Potion of Greater Healing", type: "Potion", rarity: "uncommon", days: 20, gp: 200 },
+    { name: "Potion of Superior Healing", type: "Potion", rarity: "rare", days: 200, gp: 2000 },
+    { name: "Spell Scroll (1st level)", type: "Scroll", rarity: "common", days: 2, gp: 25 },
+    { name: "Spell Scroll (2nd level)", type: "Scroll", rarity: "uncommon", days: 25, gp: 250 },
+    { name: "Spell Scroll (3rd level)", type: "Scroll", rarity: "uncommon", days: 50, gp: 500 },
+    { name: "Basic Poison", type: "Poison", rarity: "common", days: 7, gp: 100 },
+    { name: "Antitoxin", type: "Potion", rarity: "common", days: 5, gp: 50 },
+    { name: "Alchemist's Fire (flask)", type: "Alchemical", rarity: "common", days: 5, gp: 50 },
+    { name: "Plate Armor", type: "Armor", rarity: "common", days: 150, gp: 1500 },
+    { name: "Longsword", type: "Weapon", rarity: "common", days: 2, gp: 15 },
+    { name: "Holy Water (flask)", type: "Consumable", rarity: "common", days: 3, gp: 25 },
+    { name: "Blank Book", type: "Book", rarity: "common", days: 7, gp: 10 },
+  ];
+  modal(`
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h2>New Craft Project</h2>
+    <div class="form-row">
+      <label>Facility</label>
+      <select id="cfFacility">
+        ${craftFacs.map(f=>`<option value="${f.id}" ${f.id===facId?'selected':''}>${f.name}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Preset (optional)</label>
+      <select id="cfPreset" onchange="applyCraftPreset()">
+        <option value="">— Custom —</option>
+        ${presets.map((p,i)=>`<option value="${i}">${p.name} (${p.days}d, ${p.gp}gp)</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Item Name</label>
+      <input type="text" id="cfName" placeholder="e.g. Potion of Healing">
+    </div>
+    <div class="form-grid-2">
+      <div class="form-row">
+        <label>Type</label>
+        <input type="text" id="cfType" placeholder="Potion / Weapon / Scroll">
+      </div>
+      <div class="form-row">
+        <label>Rarity</label>
+        <select id="cfRarity">
+          <option value="common">Common</option>
+          <option value="uncommon">Uncommon</option>
+          <option value="rare">Rare</option>
+          <option value="very rare">Very Rare</option>
+          <option value="legendary">Legendary</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-row">
+        <label>Total Days Needed</label>
+        <input type="number" id="cfDays" value="7" min="1">
+      </div>
+      <div class="form-row">
+        <label>Days Already Done</label>
+        <input type="number" id="cfDaysDone" value="0" min="0">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Notes</label>
+      <textarea id="cfNotes" placeholder="Materials, commissioner, special conditions..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="saveCraft()">Add to Queue</button>
+    </div>
+  `);
+  window._craftPresets = presets;
+}
+
+function applyCraftPreset() {
+  const idx = document.getElementById('cfPreset').value;
+  if (idx === '') return;
+  const p = window._craftPresets[+idx];
+  document.getElementById('cfName').value = p.name;
+  document.getElementById('cfType').value = p.type;
+  document.getElementById('cfRarity').value = p.rarity;
+  document.getElementById('cfDays').value = p.days;
+}
+
+function saveCraft() {
+  const facilityId = document.getElementById('cfFacility').value;
+  const itemName = document.getElementById('cfName').value.trim();
+  if (!itemName) { alert('Please enter an item name.'); return; }
+  const itemType = document.getElementById('cfType').value.trim() || 'Item';
+  const rarity = document.getElementById('cfRarity').value;
+  const totalDays = Math.max(1, +document.getElementById('cfDays').value || 1);
+  const daysDone = Math.max(0, +document.getElementById('cfDaysDone').value || 0);
+  const notes = document.getElementById('cfNotes').value.trim();
+
+  state.craftQueue.push({
+    id: uid(), facilityId, itemName, itemType, rarity,
+    totalDays, daysDone, notes,
+    startedTurn: state.turn, completedTurn: null
+  });
+
+  // Make sure facility order is set to Craft
+  const fac = state.facilities.find(f=>f.id===facilityId);
+  if (fac) { fac.currentOrder = 'Craft'; fac.orderDetail = itemName; }
+
+  save(); closeModal(); render();
+  goTo('crafting');
+}
+
+function openAddInventory() {
+  modal(`
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h2>Add Inventory Item</h2>
+    <div class="form-row"><label>Name</label><input type="text" id="invName" placeholder="e.g. Potion of Healing"></div>
+    <div class="form-grid-2">
+      <div class="form-row"><label>Quantity</label><input type="number" id="invQty" value="1" min="1"></div>
+      <div class="form-row">
+        <label>Category</label>
+        <select id="invCat">
+          <option>Potions</option><option>Scrolls</option><option>Weapons</option><option>Armor</option>
+          <option>Poisons</option><option>Harvest</option><option>Books</option><option>Magic Items</option>
+          <option>Trade Goods</option><option>Misc</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row"><label>Notes</label><input type="text" id="invNotes" placeholder="rarity, source, etc."></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="saveInventory()">Add</button>
+    </div>
+  `);
+}
+
+function saveInventory() {
+  const name = document.getElementById('invName').value.trim();
+  if (!name) { alert('Name required'); return; }
+  const qty = Math.max(1, +document.getElementById('invQty').value || 1);
+  const category = document.getElementById('invCat').value;
+  const notes = document.getElementById('invNotes').value.trim();
+  const existing = state.inventory.find(i=>i.name===name && i.category===category);
+  if (existing) existing.qty += qty;
+  else state.inventory.push({ id: uid(), name, qty, category, notes });
+  save(); closeModal(); render();
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${state.bastionName.replace(/\s+/g,'_')}_bastion.json`;
+  a.click();
+}
+
+function importData(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      state = { ...DEFAULT_STATE, ...JSON.parse(reader.result) };
+      save(); render();
+      alert('Bastion imported.');
+    } catch(err) { alert('Invalid file: '+err.message); }
+  };
+  reader.readAsText(file);
+}
+
+// ========== TABS ==========
+function goTo(tab) {
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-'+tab));
+}
+
+document.getElementById('tabs').addEventListener('click', e => {
+  if (e.target.tagName === 'BUTTON') goTo(e.target.dataset.tab);
+});
+
+// ========== EDITABLE HEADER FIELDS ==========
+['bastionName','ownerName','charLevel'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('blur', () => {
+    let val = el.textContent.trim();
+    if (id === 'charLevel') {
+      val = Math.max(1, Math.min(20, parseInt(val,10) || 5));
+      el.textContent = val;
+    }
+    state[id] = val;
+    save(); render();
+  });
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+  });
+});
+
+document.getElementById('bastionNotes').addEventListener('input', e => {
+  state.notes = e.target.value;
+  save();
+});
+
+// ========== MAP ==========
+const MAP_W = 22, MAP_H = 18;
+let mapCellSize = 32;
+let mapSel = null;   // facilityId currently "held" for placement
+let mapHover = null; // {x,y} current hover cell
+
+const TILE_COLORS = {
+  'Arcane Study':         { bg:'rgba(90,60,150,.55)',  bd:'#7a5ab3', tx:'#d4b4ff', ic:'📚' },
+  'Armory':               { bg:'rgba(150,80,30,.55)',  bd:'#c87a3a', tx:'#ffc898', ic:'⚔️' },
+  'Barrack':              { bg:'rgba(150,40,40,.55)',  bd:'#c85a5a', tx:'#ffb4b4', ic:'🛡️' },
+  'Garden':               { bg:'rgba(40,120,50,.55)',  bd:'#5ab36a', tx:'#b4ffb4', ic:'🌿' },
+  'Library':              { bg:'rgba(40,80,150,.55)',  bd:'#5a8ab3', tx:'#b4d4ff', ic:'📖' },
+  'Pub':                  { bg:'rgba(120,80,30,.55)',  bd:'#b38a5a', tx:'#ffd4b4', ic:'🍺' },
+  'Sanctuary':            { bg:'rgba(150,130,30,.55)', bd:'#c8b43a', tx:'#fff4b4', ic:'✨' },
+  'Smithy':               { bg:'rgba(120,60,20,.55)',  bd:'#b37a3a', tx:'#ffc898', ic:'⚒️' },
+  'Storehouse':           { bg:'rgba(80,80,80,.55)',   bd:'#8a8a8a', tx:'#d4d4d4', ic:'📦' },
+  'Stable':               { bg:'rgba(100,70,30,.55)',  bd:'#b38a5a', tx:'#ffd4b4', ic:'🐴' },
+  'Workshop':             { bg:'rgba(80,100,40,.55)',  bd:'#8ab35a', tx:'#d4ffb4', ic:'🔧' },
+  'Gaming Hall':          { bg:'rgba(20,120,120,.55)', bd:'#3ab3b3', tx:'#b4ffff', ic:'🎲' },
+  'Greenhouse':           { bg:'rgba(30,140,60,.55)',  bd:'#4ab36a', tx:'#b4ffb4', ic:'🌱' },
+  'Laboratory':           { bg:'rgba(80,120,60,.55)',  bd:'#7ab35a', tx:'#d4ffb4', ic:'⚗️' },
+  'Sacristy':             { bg:'rgba(140,120,30,.55)', bd:'#c8aa3a', tx:'#fff4b4', ic:'⛪' },
+  'Scriptorium':          { bg:'rgba(60,60,140,.55)',  bd:'#6a6ab3', tx:'#d4d4ff', ic:'✒️' },
+  'Teleportation Circle': { bg:'rgba(20,120,150,.55)', bd:'#3ab3c8', tx:'#b4f4ff', ic:'🌀' },
+  'Theater':              { bg:'rgba(140,30,100,.55)', bd:'#c83a8a', tx:'#ffb4e4', ic:'🎭' },
+  'Training Area':        { bg:'rgba(140,60,20,.55)',  bd:'#c87a3a', tx:'#ffc898', ic:'🥊' },
+  'Trophy Room':          { bg:'rgba(100,80,20,.55)',  bd:'#b3a33a', tx:'#fff4b4', ic:'🏆' },
+  'Archive':              { bg:'rgba(50,50,120,.55)',  bd:'#5a5ab3', tx:'#d4d4ff', ic:'🗄️' },
+  'Meditation Chamber':   { bg:'rgba(40,80,120,.55)',  bd:'#5a8ab3', tx:'#b4d4ff', ic:'🧘' },
+  'Menagerie':            { bg:'rgba(40,120,80,.55)',  bd:'#5ab38a', tx:'#b4ffd4', ic:'🦁' },
+  'Observatory':          { bg:'rgba(20,30,120,.55)',  bd:'#3a4ab3', tx:'#b4b4ff', ic:'🔭' },
+  'Reliquary':            { bg:'rgba(140,100,20,.55)', bd:'#c8aa3a', tx:'#fff4b4', ic:'🔮' },
+  'Demiplane':            { bg:'rgba(80,20,140,.55)',  bd:'#8a3ab3', tx:'#e4b4ff', ic:'🌌' },
+  'Guildhall':            { bg:'rgba(120,80,20,.55)',  bd:'#b3a33a', tx:'#ffd4b4', ic:'🏛️' },
+  'Sanctum':              { bg:'rgba(120,100,20,.55)', bd:'#b3aa3a', tx:'#fff4b4', ic:'🌟' },
+  'War Room':             { bg:'rgba(120,30,30,.55)',  bd:'#b35a5a', tx:'#ffb4b4', ic:'🗺️' },
+  'Bedroom':   { bg:'rgba(60,55,45,.65)',  bd:'#8a8070', tx:'#c8c0b0', ic:'🛏️' },
+  'Parlor':    { bg:'rgba(55,60,45,.65)',  bd:'#80887a', tx:'#c0c8b0', ic:'🪑' },
+  'Courtyard': { bg:'rgba(30,50,25,.5)',   bd:'#607050', tx:'#a0c8a0', ic:'🌳' },
+  'Kitchen':   { bg:'rgba(80,50,30,.65)',  bd:'#907060', tx:'#c8a898', ic:'🍳' },
+  'Storage':   { bg:'rgba(60,55,50,.65)',  bd:'#807870', tx:'#c0bab4', ic:'📦' },
+  'Bath':      { bg:'rgba(40,60,80,.65)',  bd:'#608098', tx:'#a8c0d8', ic:'🛁' },
+};
+function tileCol(name) {
+  return TILE_COLORS[name] || { bg:'rgba(70,60,50,.55)', bd:'#907860', tx:'#d4c8b4', ic:'🏠' };
+}
+function facMapSize(fac) {
+  if (!fac || fac.type === 'basic') return { w:2, h:2 };
+  const s = (fac.size||'').toLowerCase();
+  if (s === 'cramped') return { w:2, h:2 };
+  if (s === 'vast')    return { w:6, h:4 };
+  return { w:4, h:3 }; // roomy
+}
+function getMap() {
+  if (!state.bastionMap) state.bastionMap = { placements:[] };
+  return state.bastionMap;
+}
+function canPlaceAt(x, y, w, h, skipId) {
+  if (x < 0 || y < 0 || x+w > MAP_W || y+h > MAP_H) return false;
+  for (const p of getMap().placements) {
+    if (p.facilityId === skipId) continue;
+    const f = state.facilities.find(f => f.id === p.facilityId);
+    if (!f) continue;
+    const s = facMapSize(f);
+    if (x < p.x+s.w && x+w > p.x && y < p.y+s.h && y+h > p.y) return false;
+  }
+  return true;
+}
+function autoArrange() {
+  if (!confirm('Auto-arrange all facilities? This resets any manual placement.')) return;
+  const mp = getMap();
+  mp.placements = [];
+  let cx=1, cy=1, rowH=0;
+  for (const fac of state.facilities) {
+    const {w,h} = facMapSize(fac);
+    if (cx+w > MAP_W-1) { cx=1; cy+=rowH+1; rowH=0; }
+    if (cy+h > MAP_H-1) break;
+    mp.placements.push({ facilityId:fac.id, x:cx, y:cy });
+    cx += w+1; rowH = Math.max(rowH, h);
+  }
+  save(); renderMap();
+}
+function clearMapSel() { mapSel=null; mapHover=null; renderMap(); }
+
+function renderMap() {
+  const el = document.getElementById('mapGrid');
+  if (!el) return;
+  const cs = mapCellSize;
+  el.style.width  = (cs*MAP_W)+'px';
+  el.style.height = (cs*MAP_H)+'px';
+  el.style.backgroundSize = `${cs}px ${cs}px`;
+
+  const mp = getMap();
+  const placedSet = new Set(mp.placements.map(p => p.facilityId));
+  let html = '';
+
+  // Placed facility tiles
+  for (const p of mp.placements) {
+    const fac = state.facilities.find(f => f.id === p.facilityId);
+    if (!fac) continue;
+    const {w,h} = facMapSize(fac);
+    const col = tileCol(fac.name);
+    const sel = mapSel === p.facilityId;
+    const icoSz = cs < 26 ? '0.8em' : cs < 34 ? '1em' : '1.2em';
+    const txtSz = cs < 26 ? '0.5em' : cs < 34 ? '0.6em' : '0.68em';
+    html += `<div class="map-facility-tile${sel?' selected-tile':''}"
+      data-facid="${p.facilityId}"
+      style="left:${p.x*cs+1}px;top:${p.y*cs+1}px;
+             width:${w*cs-2}px;height:${h*cs-2}px;
+             background:${col.bg};border:2px solid ${col.bd};color:${col.tx}">
+      <div class="tile-icon" style="font-size:${icoSz}">${col.ic}</div>
+      <div class="tile-name" style="font-size:${txtSz}">${fac.name}</div>
+    </div>`;
+  }
+
+  // Hover preview ghost
+  if (mapSel && mapHover) {
+    const fac = state.facilities.find(f => f.id === mapSel);
+    if (fac) {
+      const {w,h} = facMapSize(fac);
+      const ok = canPlaceAt(mapHover.x, mapHover.y, w, h, mapSel);
+      html += `<div class="map-preview-tile ${ok?'ok':'bad'}"
+        style="left:${mapHover.x*cs}px;top:${mapHover.y*cs}px;width:${w*cs}px;height:${h*cs}px"></div>`;
+    }
+  }
+
+  el.innerHTML = html;
+  el.onclick      = handleMapClick;
+  el.onmousemove  = handleMapMouseMove;
+  el.onmouseleave = () => { mapHover=null; renderMap(); };
+
+  // Sidebar
+  const sb = document.getElementById('mapSidebar');
+  if (!sb) return;
+  const zl = document.getElementById('mapZoomLabel');
+  if (zl) zl.textContent = cs;
+
+  const unplaced = state.facilities.filter(f => !placedSet.has(f.id));
+  const placed   = state.facilities.filter(f =>  placedSet.has(f.id));
+
+  const instrHtml = mapSel
+    ? `<div class="map-instr active">🎯 Click the map to place <strong>${state.facilities.find(f=>f.id===mapSel)?.name||'?'}</strong>. Click another room to switch.</div>`
+    : `<div class="map-instr">Click a room to select it, then click the map to place it. Click a placed room to move it.</div>`;
+
+  const unplacedHtml = unplaced.length === 0
+    ? `<div style="font-size:0.8em;color:var(--green);padding:4px 0">✓ All rooms placed!</div>`
+    : unplaced.map(f => {
+        const col = tileCol(f.name);
+        const {w,h} = facMapSize(f);
+        return `<div class="unplaced-fac ${mapSel===f.id?'sel':''}" onclick="selectMapFac('${f.id}')">
+          <div class="fac-swatch" style="background:${col.bg};border:1.5px solid ${col.bd}"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${col.ic} ${f.name}</div>
+            <div style="font-size:0.7em;color:var(--text-muted)">${w}×${h} cells · ${f.size||f.type}</div>
+          </div>
+        </div>`;
+      }).join('');
+
+  const placedHtml = placed.length === 0 ? '' : `
+    <div class="map-section-lbl">Placed (${placed.length})</div>
+    ${placed.map(f => {
+      const col = tileCol(f.name);
+      return `<div class="placed-fac-row ${mapSel===f.id?'sel':''}" onclick="selectMapFac('${f.id}')">
+        <div class="fac-swatch" style="background:${col.bg};border:1.5px solid ${col.bd};width:11px;height:11px;border-radius:2px"></div>
+        <div style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600">${f.name}</div>
+        <button class="btn small danger" onclick="event.stopPropagation();removeFromMap('${f.id}')" style="padding:2px 6px;font-size:0.7em">✕</button>
+      </div>`;
+    }).join('')}`;
+
+  sb.innerHTML = instrHtml
+    + `<div class="map-section-lbl">Unplaced (${unplaced.length})</div>`
+    + unplacedHtml + placedHtml
+    + (mapSel ? `<button class="btn small" style="margin-top:10px;width:100%" onclick="clearMapSel()">✕ Cancel</button>` : '');
+}
+
+function selectMapFac(id) { mapSel = mapSel===id ? null : id; renderMap(); }
+
+function handleMapClick(e) {
+  const tile = e.target.closest('[data-facid]');
+  if (tile) {
+    const id = tile.dataset.facid;
+    mapSel = mapSel === id ? null : id;
+    renderMap(); return;
+  }
+  if (!mapSel) return;
+  const rect = document.getElementById('mapGrid').getBoundingClientRect();
+  const x = Math.floor((e.clientX - rect.left)  / mapCellSize);
+  const y = Math.floor((e.clientY - rect.top)   / mapCellSize);
+  const fac = state.facilities.find(f => f.id === mapSel);
+  if (!fac) { mapSel=null; renderMap(); return; }
+  const {w,h} = facMapSize(fac);
+  if (canPlaceAt(x, y, w, h, mapSel)) {
+    const mp = getMap();
+    mp.placements = mp.placements.filter(p => p.facilityId !== mapSel);
+    mp.placements.push({ facilityId:mapSel, x, y });
+    mapSel = null; save(); renderMap();
+  }
+}
+
+function handleMapMouseMove(e) {
+  if (!mapSel) return;
+  const rect = document.getElementById('mapGrid').getBoundingClientRect();
+  const x = Math.floor((e.clientX - rect.left) / mapCellSize);
+  const y = Math.floor((e.clientY - rect.top)  / mapCellSize);
+  if (!mapHover || mapHover.x!==x || mapHover.y!==y) { mapHover={x,y}; renderMap(); }
+}
+
+function removeFromMap(id) {
+  getMap().placements = getMap().placements.filter(p => p.facilityId !== id);
+  if (mapSel===id) mapSel=null;
+  save(); renderMap();
+}
+
+function mapZoom(d) { mapCellSize = Math.max(20, Math.min(60, mapCellSize+d)); renderMap(); }
+
+// ========== BASTION EVENTS DATA ==========
+// Inspired by D&D 2024 DMG Bastion Events table, expanded significantly.
+// severity: 'low' | 'medium' | 'high'
+const BASTION_EVENT_POOL = [
+  // --- THREATS (high severity) ---
+  { cat: "Threat", severity: "high", text: "A band of brigands was spotted scouting the perimeter. They may attack within the next week unless driven off." },
+  { cat: "Threat", severity: "high", text: "A rival faction has placed a bounty on information about your bastion's defenses. Someone is asking suspicious questions in nearby towns." },
+  { cat: "Threat", severity: "high", text: "A monster has nested in the outbuildings. It hasn't attacked yet, but the hirelings are too frightened to work that section." },
+  { cat: "Threat", severity: "high", text: "Graffiti threats have appeared on the outer wall overnight — signed by a name your party may recognize." },
+  { cat: "Threat", severity: "high", text: "A local warlord is demanding tribute. He has not attacked yet, but his messengers made it clear he has the numbers to try." },
+  { cat: "Threat", severity: "medium", text: "Tracks of an unknown creature circle the bastion nightly. Nothing has entered yet, but something is clearly watching." },
+  { cat: "Threat", severity: "medium", text: "A self-styled 'inspector' arrived claiming authority to audit the bastion on behalf of a distant noble. Their credentials look questionable." },
+  { cat: "Threat", severity: "medium", text: "One of your hirelings was found to be secretly corresponding with an enemy faction. The full extent of the breach is unknown." },
+
+  // --- STRUCTURAL (medium severity) ---
+  { cat: "Structural", severity: "medium", text: "A section of the outer wall has developed a crack after recent rains. It's not urgent, but left unattended it will worsen." },
+  { cat: "Structural", severity: "medium", text: "The well has gone brackish. Until it's cleaned out, hirelings are hauling water from further away, slowing all facility work." },
+  { cat: "Structural", severity: "medium", text: "A beam in one of the facility roofs is rotting. The room is usable but unsafe during heavy weather until repaired." },
+  { cat: "Structural", severity: "medium", text: "Flooding in the basement has damaged stored goods and is seeping toward the foundation." },
+  { cat: "Structural", severity: "low", text: "The front gate hinges have rusted and the gate now scrapes loudly — practical and noisy." },
+  { cat: "Structural", severity: "low", text: "A section of the courtyard paving has heaved up after a hard frost, creating a tripping hazard." },
+  { cat: "Structural", severity: "low", text: "Pigeons have taken up residence in the rafters of a facility, fouling the space and distracting workers." },
+  { cat: "Structural", severity: "high", text: "A fire broke out in the night — it was contained, but one facility is smoke-damaged and unusable until repaired." },
+
+  // --- HIRELING TROUBLE (medium severity) ---
+  { cat: "Hirelings", severity: "medium", text: "Two senior hirelings are locked in a bitter dispute over duties. Morale has dipped and productivity is down across the bastion." },
+  { cat: "Hirelings", severity: "medium", text: "Three hirelings quit without notice, citing 'unnatural happenings' inside the walls at night." },
+  { cat: "Hirelings", severity: "medium", text: "The bastion's most skilled hireling received a competing offer from a wealthy merchant. They're considering it." },
+  { cat: "Hirelings", severity: "medium", text: "A hireling is suspected of theft — small quantities of coin and supplies have gone missing for weeks." },
+  { cat: "Hirelings", severity: "low", text: "Two hirelings have begun a romance that the rest of the staff finds deeply distracting." },
+  { cat: "Hirelings", severity: "low", text: "A hireling's extended family has quietly moved into storage areas, claiming 'temporary' shelter." },
+  { cat: "Hirelings", severity: "high", text: "All hireling work has ground to a halt. They are collectively demanding a raise and better sleeping quarters before resuming." },
+  { cat: "Hirelings", severity: "medium", text: "A hireling fell ill with something contagious. Several others are now showing symptoms." },
+
+  // --- SUPERNATURAL (high severity) ---
+  { cat: "Supernatural", severity: "high", text: "A haunt has taken up residence in one of the facilities. Objects move on their own and hirelings refuse to enter after dark." },
+  { cat: "Supernatural", severity: "high", text: "A magical anomaly has appeared in the courtyard — a humming rift of energy that seems to be slowly growing." },
+  { cat: "Supernatural", severity: "high", text: "Something killed the livestock overnight. No tracks. No blood. The animals simply… stopped." },
+  { cat: "Supernatural", severity: "medium", text: "Strange lights are visible in the lower corridors after midnight. No source has been found." },
+  { cat: "Supernatural", severity: "medium", text: "Hirelings report hearing whispered conversations from empty rooms — always in a language none of them recognize." },
+  { cat: "Supernatural", severity: "medium", text: "A sealed door has appeared in a wall that held no door before. It wasn't there yesterday." },
+  { cat: "Supernatural", severity: "low", text: "A scrying sensor was detected watching the bastion. It was dispersed, but whoever sent it now knows you spotted it." },
+  { cat: "Supernatural", severity: "medium", text: "All magic items stored in the bastion have been behaving erratically. Attuned items feel 'distant' until this is resolved." },
+
+  // --- POLITICAL (medium severity) ---
+  { cat: "Political", severity: "medium", text: "A local merchant guild is lobbying the town council to restrict your trade activity, citing 'unfair competition' from your facilities." },
+  { cat: "Political", severity: "medium", text: "A herald arrived with a formal complaint from a neighboring noble about your bastion's 'territorial expansion.'" },
+  { cat: "Political", severity: "medium", text: "The region's tax collector arrived unannounced and is demanding back-payment on 'fortification levies' for the past season." },
+  { cat: "Political", severity: "high", text: "A warrant has been issued for one of your hirelings by city authorities. Sheltering them could create legal complications for the bastion." },
+  { cat: "Political", severity: "low", text: "A local noble has requested use of the bastion for a private meeting. The reason given is vague." },
+  { cat: "Political", severity: "medium", text: "Rumors are circulating in town that the bastion is being used for illegal activity. The source of the rumor is unknown." },
+
+  // --- DISCOVERY (low/medium) ---
+  { cat: "Discovery", severity: "low", text: "Workers excavating the cellar broke through into an older tunnel system beneath the bastion. Its extent is unknown." },
+  { cat: "Discovery", severity: "low", text: "A sealed chest was found bricked into a wall during repairs. It is locked and bears an unfamiliar crest." },
+  { cat: "Discovery", severity: "low", text: "Ancient writing was uncovered beneath old plasterwork — it predates the current structure by centuries." },
+  { cat: "Discovery", severity: "low", text: "A hireling unearthed a cache of old coins while tending the garden. The mint is unfamiliar." },
+  { cat: "Discovery", severity: "medium", text: "A partial map was found hidden in the foundations — it appears to show a room that doesn't exist in the current floor plan." },
+  { cat: "Discovery", severity: "low", text: "Something is growing in the lower cellar that no one planted. It smells faintly of magic." },
+
+  // --- OPPORTUNITY (low) ---
+  { cat: "Opportunity", severity: "low", text: "A retired adventurer has arrived and is offering their services as a hireling. They seem highly skilled — and oddly inexpensive." },
+  { cat: "Opportunity", severity: "low", text: "A traveling merchant is offering a bulk purchase of rare materials at a discount, citing a need to move inventory quickly." },
+  { cat: "Opportunity", severity: "low", text: "A local noble's heir wants to apprentice at the bastion. Their family would pay handsomely for the privilege." },
+  { cat: "Opportunity", severity: "low", text: "A messenger arrived with an unsigned offer to purchase the bastion — at a suspiciously generous price." },
+  { cat: "Opportunity", severity: "low", text: "A cartographer is passing through and offers to create a detailed map of your bastion in exchange for lodging." },
+  { cat: "Opportunity", severity: "low", text: "Word has spread of the bastion's reputation. A delegation from a distant city has arrived seeking an alliance." },
+];
+
+// Roll for a bastion event (chance scales with unresolved events — the more you ignore, the worse it gets)
+function rollBastionEvent() {
+  const openCount = (state.bastionEvents || []).filter(e => !e.resolved).length;
+  // Base 30% chance + 5% per unresolved event, capped at 75%
+  const chance = Math.min(0.75, 0.30 + openCount * 0.05);
+  if (Math.random() > chance) return null;
+
+  const activeTexts = (state.bastionEvents || []).filter(e => !e.resolved).map(e => e.text);
+  const available = BASTION_EVENT_POOL.filter(e => !activeTexts.includes(e.text));
+  if (!available.length) return null;
+
+  // Weight toward higher severity when there are already open events
+  let pool = available;
+  if (openCount >= 3) pool = available.filter(e => e.severity !== 'low').length > 0
+    ? available.filter(e => e.severity !== 'low')
+    : available;
+
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+// ========== BASTION EVENTS RENDERING ==========
+function renderBastionEvents() {
+  const events = state.bastionEvents || [];
+  const active = events.filter(e => !e.resolved);
+  const resolved = events.filter(e => e.resolved);
+
+  // Update Overview tab badge
+  const badge = document.getElementById('eventsBadge');
+  if (badge) {
+    if (active.length > 0) { badge.style.display = 'inline-block'; badge.textContent = active.length; }
+    else { badge.style.display = 'none'; }
+  }
+
+  const el = document.getElementById('bastionEventsPanel');
+  if (!el) return;
+
+  const severityIcon = { low: '📋', medium: '⚠️', high: '🚨' };
+
+  const activeHtml = active.length === 0
+    ? `<div style="font-size:0.85em;color:var(--text-muted);padding:8px 4px">No active events — the bastion is quiet for now.</div>`
+    : active.map(e => `
+      <div class="bastion-event-item severity-${e.severity}">
+        <div class="event-body">
+          <div class="event-text">${severityIcon[e.severity]} ${e.text}</div>
+          <div class="event-meta">
+            <span class="event-cat">${e.cat}</span>
+            <span class="event-turn">Turn ${e.turn}</span>
+          </div>
+        </div>
+        <div class="event-actions">
+          <button class="btn small" onclick="resolveBastionEvent('${e.id}')">Resolve</button>
+          <button class="btn small danger" onclick="dismissBastionEvent('${e.id}')">✕</button>
+        </div>
+      </div>`).join('');
+
+  const resolvedHtml = resolved.length > 0 ? `
+    <details style="margin-top:10px">
+      <summary style="font-size:0.75em;color:var(--text-muted);cursor:pointer;user-select:none">
+        Resolved Events (${resolved.length})
+      </summary>
+      <div style="margin-top:8px">
+        ${resolved.slice(-5).reverse().map(e => `
+          <div class="bastion-event-item resolved">
+            <div class="event-body">
+              <div class="event-text">${e.text}</div>
+              <div class="event-meta"><span class="event-cat">${e.cat}</span><span class="event-turn">Turn ${e.turn}</span></div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </details>` : '';
+
+  el.innerHTML = `
+    <div class="bastion-events-panel">
+      <div class="bastion-events-header">
+        <div class="bastion-events-title">
+          🏰 Bastion Events
+          <span class="event-count-badge ${active.length === 0 ? 'none' : ''}">
+            ${active.length === 0 ? 'All Clear' : `${active.length} Active`}
+          </span>
+        </div>
+        <button class="btn small" onclick="addManualBastionEvent()">+ Add Event</button>
+      </div>
+      ${activeHtml}
+      ${resolvedHtml}
+    </div>`;
+}
+
+function resolveBastionEvent(id) {
+  const e = (state.bastionEvents || []).find(x => x.id === id);
+  if (e) e.resolved = true;
+  save(); render();
+}
+
+function dismissBastionEvent(id) {
+  state.bastionEvents = (state.bastionEvents || []).filter(x => x.id !== id);
+  save(); render();
+}
+
+function addManualBastionEvent() {
+  const text = prompt('Describe the event:');
+  if (!text) return;
+  const cats = ['Threat','Structural','Hirelings','Supernatural','Political','Discovery','Opportunity'];
+  const cat = prompt(`Category (${cats.join(', ')}):`, 'Structural') || 'Structural';
+  const sev = prompt('Severity (low / medium / high):', 'medium') || 'medium';
+  (state.bastionEvents = state.bastionEvents || []).push({
+    id: uid(), text, cat, severity: sev, turn: state.turn, resolved: false
+  });
+  save(); render();
+}
+
+// ========== FRANCHISE DATA ==========
+const FRANCHISE_TYPES = [
+  { name: "Tavern",          icon: "🍺", baseIncome: { thriving:120, stable:70, struggling:25, closed:0 } },
+  { name: "Inn",             icon: "🛏", baseIncome: { thriving:100, stable:60, struggling:20, closed:0 } },
+  { name: "Smithy",         icon: "⚒️",  baseIncome: { thriving:110, stable:65, struggling:20, closed:0 } },
+  { name: "General Store",  icon: "🛒", baseIncome: { thriving:90,  stable:50, struggling:15, closed:0 } },
+  { name: "Stable",         icon: "🐴", baseIncome: { thriving:80,  stable:45, struggling:15, closed:0 } },
+  { name: "Herbalist",      icon: "🌿", baseIncome: { thriving:95,  stable:55, struggling:18, closed:0 } },
+  { name: "Apothecary",     icon: "⚗️",  baseIncome: { thriving:130, stable:80, struggling:30, closed:0 } },
+  { name: "Theater/Bard Hall", icon: "🎭", baseIncome: { thriving:150, stable:85, struggling:25, closed:0 } },
+  { name: "Gambling Den",   icon: "🎲", baseIncome: { thriving:200, stable:80, struggling:10, closed:0 } },
+  { name: "Magic Curiosity Shop", icon: "🔮", baseIncome: { thriving:160, stable:90, struggling:30, closed:0 } },
+];
+
+// Big pool of random issues, organized by severity
+const FRANCHISE_ISSUES = {
+  staff: [
+    "The head barkeep quit without notice, leaving the staff in disarray.",
+    "Two of the servers are feuding over tips, and customers are noticing.",
+    "The cook has started arriving late every morning — rumor says they have a gambling problem.",
+    "A new hire turned out to be a plant from a rival business, feeding them information.",
+    "Half the staff came down sick with a mysterious stomach ailment after last week's stew.",
+    "The most popular staff member is being courted by a rival establishment.",
+    "A staff member was caught skimming coin from the register — small amounts, but it's adding up.",
+    "Rumors among the staff suggest someone is planning to unionize against the franchise owners.",
+  ],
+  rival: [
+    "A rival establishment opened two streets over and is undercutting your prices.",
+    "Someone is spreading rumors that your establishment uses questionable ingredients.",
+    "A local thieves' guild is demanding 'protection' coin each week.",
+    "A competing merchant bribed the city watch to inspect your premises for violations.",
+    "A rival hired a bard to compose an unflattering song about your establishment.",
+    "An anonymous pamphlet is circulating claiming the franchise is haunted.",
+    "A rival business is poaching your loyal customers with a special discount program.",
+    "The Merchants' Guild is pressuring you to join (and pay dues) or face informal sabotage.",
+  ],
+  incident: [
+    "A brawl broke out last night, causing significant property damage.",
+    "A fire broke out in the kitchen — damages are manageable but repairs are needed.",
+    "A patron claims to have found a rat in their food and is threatening to go to the city council.",
+    "A valuable item went missing from a guest's room — they're threatening legal action.",
+    "A mysterious traveler left without paying a very large tab.",
+    "A local noble had a terrible experience and publicly complained to anyone who'd listen.",
+    "A shipment of supplies was stolen in transit, causing a shortage this week.",
+    "A body was found in the alley behind the establishment — guards are asking questions.",
+    "A drunk patron destroyed a piece of art or furniture that had sentimental value.",
+    "A flash flood or storm damaged the roof — customers stayed away while it leaked.",
+  ],
+  opportunity: [
+    "A traveling merchant wants to set up a stall out front — for a fee, it could bring more foot traffic.",
+    "A minor noble is interested in becoming a silent investor in exchange for a private booth.",
+    "A famous adventuring party wants to make your establishment their regular haunt.",
+    "A local festival is coming — you could capitalize with special offerings if you act fast.",
+    "A wandering bard is willing to perform regularly in exchange for free room and board.",
+    "The city guard sergeant asks to hold their weekly meetings here — guaranteed steady coin.",
+    "A cartographer wants to publish a map of the city featuring your franchise prominently.",
+    "A rival establishment just closed — you could poach their staff and customers.",
+  ],
+  mysterious: [
+    "Patrons keep reporting they hear faint weeping from behind the east wall after midnight.",
+    "Goods keep disappearing from the locked storeroom despite no signs of forced entry.",
+    "A patron left a sealed letter addressed to 'whoever opens this last' — it's started glowing faintly.",
+    "Three different customers this week have asked about 'the woman who sits by the fire' — you have no such regular.",
+    "A small shrine to an unknown deity appeared overnight in the courtyard.",
+    "Animals refuse to enter the stables near the back corner — staff won't go near it at night.",
+    "Someone keeps leaving a single black feather on the bar every morning before anyone arrives.",
+    "A regular patron has not aged a day in the 30 years the locals say they've been coming here.",
+  ],
+};
+
+const ALL_ISSUES = Object.values(FRANCHISE_ISSUES).flat();
+
+// Income variance: roll a spread based on status
+function rollFranchiseIncome(franchise) {
+  const type = FRANCHISE_TYPES.find(t => t.name === franchise.type) || FRANCHISE_TYPES[0];
+  const base = type.baseIncome[franchise.status] || 0;
+  if (base === 0) return 0;
+  // ±20% random variance
+  const variance = Math.floor(base * 0.2);
+  return base + Math.floor(Math.random() * (variance * 2 + 1)) - variance;
+}
+
+// Roll for an issue (roughly 30% chance per turn per franchise)
+function rollFranchiseIssue(franchise) {
+  if (franchise.status === 'closed') return null;
+  const roll = Math.random();
+  // thriving: 15%, stable: 25%, struggling: 45%
+  const threshold = franchise.status === 'thriving' ? 0.15 : franchise.status === 'stable' ? 0.25 : 0.45;
+  if (roll > threshold) return null;
+  // Pick a random issue not already active
+  const activeTexts = (franchise.issues || []).filter(i => !i.resolved).map(i => i.text);
+  const available = ALL_ISSUES.filter(t => !activeTexts.includes(t));
+  if (!available.length) return null;
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+// ========== FRANCHISE RENDERING ==========
+function renderFranchises() {
+  const franchises = state.franchises || [];
+  const totalWeekly = franchises.reduce((sum, f) => {
+    const type = FRANCHISE_TYPES.find(t => t.name === f.type) || FRANCHISE_TYPES[0];
+    return sum + (type.baseIncome[f.status] || 0);
+  }, 0);
+
+  const openIssues = franchises.reduce((n, f) => n + (f.issues||[]).filter(i=>!i.resolved).length, 0);
+  const badge = document.getElementById('issueBadge');
+  if (openIssues > 0) { badge.style.display = 'inline-block'; badge.textContent = openIssues; }
+  else { badge.style.display = 'none'; }
+
+  const summaryEl = document.getElementById('franchiseIncomeSummary');
+  if (franchises.length) {
+    summaryEl.innerHTML = `<div class="franchise-income-total">
+      <div><div class="lbl">Est. Weekly Income (all franchises)</div><div class="big">${totalWeekly} gp</div></div>
+      <div style="flex:1"></div>
+      <div><div class="lbl">Open Issues</div><div class="big" style="color:${openIssues>0?'var(--recruit)':'var(--green)'}">${openIssues}</div></div>
+      <div><div class="lbl">Total Franchises</div><div class="big">${franchises.length}</div></div>
+    </div>`;
+  } else {
+    summaryEl.innerHTML = '';
+  }
+
+  const listEl = document.getElementById('franchiseList');
+  if (!franchises.length) {
+    listEl.innerHTML = `<div class="empty-state"><h3>No franchises yet</h3><p>Add a tavern, inn, shop, or other business your party owns. Each earns gold per Bastion Turn and may generate issues to resolve.</p></div>`;
+    return;
+  }
+
+  listEl.innerHTML = franchises.map(f => {
+    const type = FRANCHISE_TYPES.find(t => t.name === f.type) || FRANCHISE_TYPES[0];
+    const weeklyBase = type.baseIncome[f.status] || 0;
+    const activeIssues = (f.issues||[]).filter(i=>!i.resolved);
+    const resolvedIssues = (f.issues||[]).filter(i=>i.resolved);
+    const issuesHtml = activeIssues.map(issue => `
+      <div class="issue-item">
+        <div style="flex:1">
+          <div class="issue-text">⚠️ ${issue.text}</div>
+          <div class="issue-turn">Turn ${issue.turn}</div>
+        </div>
+        <button class="btn small" onclick="resolveIssue('${f.id}','${issue.id}')">Resolve</button>
+        <button class="btn small danger" onclick="dismissIssue('${f.id}','${issue.id}')">✕</button>
+      </div>`).join('');
+    const resolvedHtml = resolvedIssues.length ? `<div style="margin-top:6px">
+      ${resolvedIssues.slice(-3).map(issue => `<div class="issue-item resolved"><div class="issue-text">${issue.text}</div></div>`).join('')}
+    </div>` : '';
+
+    return `<div class="franchise-card">
+      <div class="franchise-header">
+        <div>
+          <div class="franchise-name">${type.icon} ${f.name}</div>
+          <div class="franchise-location">${f.type}${f.location ? ' · ' + f.location : ''}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+          <span class="status-pill status-${f.status}">${f.status}</span>
+          <button class="btn small danger" onclick="removeFranchise('${f.id}')">✕</button>
+        </div>
+      </div>
+
+      <div class="franchise-stats">
+        <div class="fstat"><div class="lbl">Weekly Income</div><div class="val">${weeklyBase} gp</div></div>
+        <div class="fstat"><div class="lbl">Total Earned</div><div class="val">${f.totalEarned||0} gp</div></div>
+        <div class="fstat"><div class="lbl">Open Issues</div><div class="val" style="color:${activeIssues.length>0?'var(--recruit)':'var(--green)'}">${activeIssues.length}</div></div>
+        <div class="fstat"><div class="lbl">Since Turn</div><div class="val">${f.startTurn||1}</div></div>
+      </div>
+
+      ${f.notes ? `<div style="font-size:0.8em;color:var(--text-dim);margin-bottom:8px;line-height:1.5">${f.notes}</div>`:''}
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:${activeIssues.length?'10px':'0'}">
+        <button class="btn small" onclick="cycleStatus('${f.id}')">Change Status</button>
+        <button class="btn small" onclick="addManualIssue('${f.id}')">+ Add Issue</button>
+        <button class="btn small" onclick="collectIncome('${f.id}')">Collect Income</button>
+        <button class="btn small" onclick="editFranchiseNotes('${f.id}')">Edit Notes</button>
+      </div>
+
+      ${activeIssues.length ? `<div class="issue-list"><div style="font-size:0.72em;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);font-weight:700;margin-bottom:6px">Active Issues</div>${issuesHtml}</div>` : ''}
+      ${resolvedIssues.length ? `<details style="margin-top:8px"><summary style="font-size:0.75em;color:var(--text-muted);cursor:pointer">Resolved Issues (${resolvedIssues.length})</summary>${resolvedHtml}</details>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ========== FRANCHISE ACTIONS ==========
+function removeFranchise(id) {
+  if (!confirm('Remove this franchise?')) return;
+  state.franchises = (state.franchises||[]).filter(f=>f.id!==id);
+  save(); render();
+}
+
+function cycleStatus(id) {
+  const f = (state.franchises||[]).find(x=>x.id===id);
+  if (!f) return;
+  const statuses = ['thriving','stable','struggling','closed'];
+  const idx = statuses.indexOf(f.status);
+  f.status = statuses[(idx+1) % statuses.length];
+  save(); render();
+}
+
+function resolveIssue(facId, issueId) {
+  const f = (state.franchises||[]).find(x=>x.id===facId);
+  if (!f) return;
+  const issue = (f.issues||[]).find(i=>i.id===issueId);
+  if (issue) issue.resolved = true;
+  save(); render();
+}
+
+function dismissIssue(facId, issueId) {
+  const f = (state.franchises||[]).find(x=>x.id===facId);
+  if (!f) return;
+  f.issues = (f.issues||[]).filter(i=>i.id!==issueId);
+  save(); render();
+}
+
+function collectIncome(id) {
+  const f = (state.franchises||[]).find(x=>x.id===id);
+  if (!f) return;
+  const earned = rollFranchiseIncome(f);
+  f.totalEarned = (f.totalEarned||0) + earned;
+  state.gold = (state.gold||0) + earned;
+  logEvent(`💰 ${f.name} collected ${earned} gp (${f.status}).`);
+  save(); render();
+}
+
+function addManualIssue(id) {
+  const text = prompt('Describe the issue:');
+  if (!text) return;
+  const f = (state.franchises||[]).find(x=>x.id===id);
+  if (!f) return;
+  (f.issues = f.issues||[]).push({ id: uid(), text, turn: state.turn, resolved: false });
+  save(); render();
+}
+
+function editFranchiseNotes(id) {
+  const f = (state.franchises||[]).find(x=>x.id===id);
+  if (!f) return;
+  const text = prompt('Franchise notes (manager, location details, history):', f.notes||'');
+  if (text === null) return;
+  f.notes = text;
+  save(); render();
+}
+
+function openAddFranchise() {
+  modal(`
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h2>Add Franchise</h2>
+    <div class="form-row"><label>Franchise Name</label><input type="text" id="frName" placeholder="e.g. The Gilded Flagon"></div>
+    <div class="form-grid-2">
+      <div class="form-row">
+        <label>Business Type</label>
+        <select id="frType">
+          ${FRANCHISE_TYPES.map(t=>`<option value="${t.name}">${t.icon} ${t.name} (${t.baseIncome.stable}gp/wk stable)</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Starting Status</label>
+        <select id="frStatus">
+          <option value="thriving">Thriving</option>
+          <option value="stable" selected>Stable</option>
+          <option value="struggling">Struggling</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row"><label>Location (optional)</label><input type="text" id="frLocation" placeholder="e.g. Waterdeep, Trade Ward"></div>
+    <div class="form-row"><label>Notes (manager, history, etc.)</label><textarea id="frNotes" placeholder="Who runs it? How did you acquire it?"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="saveFranchise()">Add Franchise</button>
+    </div>
+  `);
+}
+
+function saveFranchise() {
+  const name = document.getElementById('frName').value.trim();
+  if (!name) { alert('Name required'); return; }
+  (state.franchises = state.franchises||[]).push({
+    id: uid(),
+    name,
+    type: document.getElementById('frType').value,
+    status: document.getElementById('frStatus').value,
+    location: document.getElementById('frLocation').value.trim(),
+    notes: document.getElementById('frNotes').value.trim(),
+    totalEarned: 0,
+    startTurn: state.turn,
+    issues: [],
+  });
+  save(); closeModal(); render();
+  goTo('franchises');
+}
+
+// Hook franchise processing into advanceTurn:
+const _origAdvanceTurn = advanceTurn;
+advanceTurn = function() {
+  _origAdvanceTurn();
+  // After turn advances, process franchises
+  const franchises = state.franchises || [];
+  franchises.forEach(f => {
+    if (f.status === 'closed') return;
+    // Auto earn income
+    const earned = rollFranchiseIncome(f);
+    f.totalEarned = (f.totalEarned||0) + earned;
+    state.gold = (state.gold||0) + earned;
+    logEvent(`💰 ${f.name}: earned ${earned} gp (${f.status}).`);
+    // Roll for issue
+    const issue = rollFranchiseIssue(f);
+    if (issue) {
+      (f.issues = f.issues||[]).push({ id: uid(), text: issue, turn: state.turn, resolved: false });
+      logEvent(`⚠️ ${f.name}: new issue — "${issue.slice(0, 60)}…"`);
+    }
+  });
+  save(); render();
+};
+
+// ========== Init
+render();
+</script>
+</body>
+</html>

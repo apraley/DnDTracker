@@ -250,6 +250,7 @@
     /* ── PANELS ───────────────────────────────────── */
     .tab-panel { display: none; padding: 24px; }
     .tab-panel.active { display: block; }
+    #tab-bastion { padding: 0; height: 100%; overflow: hidden; }
 
     /* ── TYPOGRAPHY ───────────────────────────────── */
     h2 {
@@ -1582,6 +1583,7 @@
   <button class="tab-btn"         data-tab="rules"     onclick="switchTab(this,'rules')">📖 Rules<span class="tab-popout-btn" onclick="popOutTab(event,'rules')" title="Pop out Rules">↗</span></button>
   <button class="tab-btn"         data-tab="ai"        onclick="switchTab(this,'ai')">✨ Narrator<span class="tab-popout-btn" onclick="popOutTab(event,'ai')" title="Pop out AI Narrator">↗</span></button>
   <button class="tab-btn"         data-tab="vault"     onclick="switchTab(this,'vault')">🗄 Vault<span class="tab-popout-btn" onclick="popOutTab(event,'vault')" title="Pop out Vault">↗</span></button>
+  <button class="tab-btn"         data-tab="bastion"   onclick="switchTab(this,'bastion')">🏰 Bastion<span class="tab-popout-btn" onclick="popOutTab(event,'bastion')" title="Pop out Bastion">↗</span></button>
 </nav>
 <div class="panels-container">
 
@@ -3240,6 +3242,12 @@
 </div>
 
 
+<!-- TAB — BASTION
+══════════════════════════════════════════════════ -->
+<div id="tab-bastion" class="tab-panel" style="padding:0;height:100%;display:none;">
+  <iframe id="bastion-iframe" src="bastion.html" style="width:100%;height:100%;border:none;display:block;" allowfullscreen></iframe>
+</div>
+
 </div><!-- /panels-container -->
 </div><!-- /app-main -->
 </div><!-- /app-layout -->
@@ -3717,6 +3725,11 @@ function switchTab(btn, tab) {
   if (tab === 'encounter') initDiffCalc();
   if (tab === 'ai')        initAITab();
   if (tab === 'vault')     vaultInit().then(vaultRender);
+  if (tab === 'bastion') {
+    const iframe = document.getElementById('bastion-iframe');
+    if (iframe && !iframe.dataset.loaded) { iframe.src = 'bastion.html'; iframe.dataset.loaded = '1'; }
+    document.getElementById('tab-bastion').style.display = 'block';
+  }
 }
 function switchTabById(tab) {
   const btn = document.querySelector(`[data-tab="${tab}"]`);
