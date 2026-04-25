@@ -199,14 +199,39 @@
     .logo { font-size: 1.7rem; line-height: 1; }
 
     /* ── TABS ─────────────────────────────────────── */
-    nav {
+    .nav-wrapper {
       background: var(--nav-bg);
       border-bottom: 1px solid var(--nav-bdr);
       display: flex;
-      padding: 0 16px;
+      align-items: stretch;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .nav-scroll-btn {
+      background: var(--nav-bg);
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 0 8px;
+      display: none;
+      align-items: center;
+      flex-shrink: 0;
+      transition: color 0.15s;
+      z-index: 2;
+    }
+    .nav-scroll-btn:hover { color: var(--gold); }
+    .nav-scroll-btn.visible { display: flex; }
+    nav {
+      background: var(--nav-bg);
+      display: flex;
+      padding: 0 4px;
       gap: 0;
       overflow-x: auto;
+      flex: 1;
+      scrollbar-width: none;
     }
+    nav::-webkit-scrollbar { display: none; }
     .tab-btn {
       background: none;
       border: none;
@@ -736,7 +761,7 @@
     .cs-add { background: none; border: none; border-top: 1px solid var(--sidebar-bdr); color: var(--sidebar-sub); cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.5px; padding: 10px 12px; text-align: left; width: 100%; white-space: nowrap; }
     .cs-add:hover { background: var(--leather2); color: var(--sidebar-txt); }
     .app-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .app-main nav { flex-shrink: 0; overflow-x: auto; }
+    .app-main .nav-wrapper { flex-shrink: 0; }
     .panels-container { flex: 1; overflow-y: auto; }
 
     /* ── MONSTER ACTION POPOVER ────────────────────── */
@@ -1572,19 +1597,24 @@
 
 <!-- MAIN AREA -->
 <div class="app-main">
-<nav>
-  <button class="tab-btn active"  data-tab="battle"    onclick="switchTab(this,'battle')">⚔ Battle<span class="tab-popout-btn" onclick="popOutTab(event,'battle')" title="Pop out Battle">↗</span></button>
-  <button class="tab-btn"         data-tab="effects"   onclick="switchTab(this,'effects')">✦ Effects<span class="tab-popout-btn" onclick="popOutTab(event,'effects')" title="Pop out Effects">↗</span></button>
-  <button class="tab-btn"         data-tab="loot"      onclick="switchTab(this,'loot')">💰 Loot<span class="tab-popout-btn" onclick="popOutTab(event,'loot')" title="Pop out Loot">↗</span></button>
-  <button class="tab-btn"         data-tab="npc"       onclick="switchTab(this,'npc')">🎭 NPC<span class="tab-popout-btn" onclick="popOutTab(event,'npc')" title="Pop out NPC">↗</span></button>
-  <button class="tab-btn"         data-tab="encounter" onclick="switchTab(this,'encounter')">⚡ Encounter<span class="tab-popout-btn" onclick="popOutTab(event,'encounter')" title="Pop out Encounter">↗</span></button>
-  <button class="tab-btn"         data-tab="commerce"  onclick="switchTab(this,'commerce')">🏪 Shop<span class="tab-popout-btn" onclick="popOutTab(event,'commerce')" title="Pop out Commerce">↗</span></button>
-  <button class="tab-btn"         data-tab="campaign"  onclick="switchTab(this,'campaign')">📋 Campaign<span class="tab-popout-btn" onclick="popOutTab(event,'campaign')" title="Pop out Campaign">↗</span></button>
-  <button class="tab-btn"         data-tab="rules"     onclick="switchTab(this,'rules')">📖 Rules<span class="tab-popout-btn" onclick="popOutTab(event,'rules')" title="Pop out Rules">↗</span></button>
-  <button class="tab-btn"         data-tab="ai"        onclick="switchTab(this,'ai')">✨ Narrator<span class="tab-popout-btn" onclick="popOutTab(event,'ai')" title="Pop out AI Narrator">↗</span></button>
-  <button class="tab-btn"         data-tab="vault"     onclick="switchTab(this,'vault')">🗄 Vault<span class="tab-popout-btn" onclick="popOutTab(event,'vault')" title="Pop out Vault">↗</span></button>
-  <button class="tab-btn"         data-tab="bastion"   onclick="switchTab(this,'bastion')">🏰 Bastion<span class="tab-popout-btn" onclick="popOutTab(event,'bastion')" title="Pop out Bastion">↗</span></button>
-</nav>
+<div class="nav-wrapper">
+  <button class="nav-scroll-btn" id="nav-scroll-left" onclick="navScroll(-1)" title="Scroll tabs left">◀</button>
+  <nav id="main-nav">
+    <button class="tab-btn active"  data-tab="battle"    onclick="switchTab(this,'battle')">⚔ Battle<span class="tab-popout-btn" onclick="popOutTab(event,'battle')" title="Pop out Battle">↗</span></button>
+    <button class="tab-btn"         data-tab="effects"   onclick="switchTab(this,'effects')">✦ Effects<span class="tab-popout-btn" onclick="popOutTab(event,'effects')" title="Pop out Effects">↗</span></button>
+    <button class="tab-btn"         data-tab="loot"      onclick="switchTab(this,'loot')">💰 Loot<span class="tab-popout-btn" onclick="popOutTab(event,'loot')" title="Pop out Loot">↗</span></button>
+    <button class="tab-btn"         data-tab="npc"       onclick="switchTab(this,'npc')">🎭 NPC<span class="tab-popout-btn" onclick="popOutTab(event,'npc')" title="Pop out NPC">↗</span></button>
+    <button class="tab-btn"         data-tab="encounter" onclick="switchTab(this,'encounter')">⚡ Encounter<span class="tab-popout-btn" onclick="popOutTab(event,'encounter')" title="Pop out Encounter">↗</span></button>
+    <button class="tab-btn"         data-tab="travel"    onclick="switchTab(this,'travel')">🗺 Travel<span class="tab-popout-btn" onclick="popOutTab(event,'travel')" title="Pop out Travel">↗</span></button>
+    <button class="tab-btn"         data-tab="commerce"  onclick="switchTab(this,'commerce')">🏪 Shop<span class="tab-popout-btn" onclick="popOutTab(event,'commerce')" title="Pop out Commerce">↗</span></button>
+    <button class="tab-btn"         data-tab="campaign"  onclick="switchTab(this,'campaign')">📋 Campaign<span class="tab-popout-btn" onclick="popOutTab(event,'campaign')" title="Pop out Campaign">↗</span></button>
+    <button class="tab-btn"         data-tab="rules"     onclick="switchTab(this,'rules')">📖 Rules<span class="tab-popout-btn" onclick="popOutTab(event,'rules')" title="Pop out Rules">↗</span></button>
+    <button class="tab-btn"         data-tab="ai"        onclick="switchTab(this,'ai')">✨ Narrator<span class="tab-popout-btn" onclick="popOutTab(event,'ai')" title="Pop out AI Narrator">↗</span></button>
+    <button class="tab-btn"         data-tab="vault"     onclick="switchTab(this,'vault')">🗄 Vault<span class="tab-popout-btn" onclick="popOutTab(event,'vault')" title="Pop out Vault">↗</span></button>
+    <button class="tab-btn"         data-tab="bastion"   onclick="switchTab(this,'bastion')">🏰 Bastion<span class="tab-popout-btn" onclick="popOutTab(event,'bastion')" title="Pop out Bastion">↗</span></button>
+  </nav>
+  <button class="nav-scroll-btn" id="nav-scroll-right" onclick="navScroll(1)" title="Scroll tabs right">▶</button>
+</div>
 <div class="panels-container">
 
 <!-- ══════════════════════════════════════════════════
@@ -2345,6 +2375,153 @@
       <div id="trap-output" style="display:none;margin-top:8px;"></div>
     </div>
   </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     TAB — TRAVEL TRACKER
+══════════════════════════════════════════════════ -->
+<div id="tab-travel" class="tab-panel">
+<div style="max-width:900px;">
+
+  <!-- Route + Pace row -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+    <div class="panel-card">
+      <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin:0 0 12px;">🗺 Route</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div>
+          <label style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">From</label>
+          <input type="text" id="travel-from" placeholder="Starting location" class="form-control" style="width:100%;margin-top:4px;" oninput="travelSave()" value="">
+        </div>
+        <div>
+          <label style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">To</label>
+          <input type="text" id="travel-to" placeholder="Destination" class="form-control" style="width:100%;margin-top:4px;" oninput="travelSave()" value="">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div>
+          <label style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">Total Distance (miles)</label>
+          <input type="number" id="travel-total" placeholder="0" min="0" class="form-control" style="width:100%;margin-top:4px;" oninput="travelSave();travelUpdateProgress()" value="0">
+        </div>
+        <div>
+          <label style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">Miles Completed</label>
+          <input type="number" id="travel-done" placeholder="0" min="0" class="form-control" style="width:100%;margin-top:4px;" oninput="travelSave();travelUpdateProgress()" value="0">
+        </div>
+      </div>
+      <div>
+        <label style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">Terrain</label>
+        <select id="travel-terrain" class="form-control" style="width:100%;margin-top:4px;" onchange="travelSave();travelUpdateProgress()">
+          <option value="road">🛤 Road (×1.0)</option>
+          <option value="plains">🌾 Plains (×0.9)</option>
+          <option value="forest">🌲 Forest (×0.75)</option>
+          <option value="hills">⛰ Hills (×0.75)</option>
+          <option value="mountains">🏔 Mountains (×0.5)</option>
+          <option value="swamp">🌿 Swamp (×0.5)</option>
+          <option value="desert">🏜 Desert (×0.75)</option>
+          <option value="arctic">❄ Arctic (×0.5)</option>
+          <option value="sea">⛵ Sea / River (×1.5)</option>
+        </select>
+      </div>
+      <!-- Progress bar -->
+      <div style="margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text3);margin-bottom:4px;">
+          <span id="travel-progress-label">0 / 0 miles</span>
+          <span id="travel-days-label">— days remaining</span>
+        </div>
+        <div style="background:var(--surface2);border-radius:6px;height:10px;overflow:hidden;">
+          <div id="travel-progress-bar" style="height:100%;background:var(--gold);border-radius:6px;width:0%;transition:width 0.3s;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin:0 0 12px;">🏃 Travel Pace</h3>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+        <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:8px;border:1px solid transparent;cursor:pointer;transition:border-color 0.15s;" id="pace-slow-label">
+          <input type="radio" name="travel-pace" value="slow" onchange="travelSave();travelUpdateProgress()" style="margin-top:3px;">
+          <div><div style="font-weight:600;color:var(--text);">Slow — 18 miles/day</div><div style="font-size:0.72rem;color:var(--text3);margin-top:2px;">Can use Stealth · +5 Passive Perception · Advantage on foraging</div></div>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:8px;border:1px solid var(--gold);cursor:pointer;" id="pace-normal-label">
+          <input type="radio" name="travel-pace" value="normal" checked onchange="travelSave();travelUpdateProgress()" style="margin-top:3px;">
+          <div><div style="font-weight:600;color:var(--text);">Normal — 24 miles/day</div><div style="font-size:0.72rem;color:var(--text3);margin-top:2px;">Standard movement · No special modifiers</div></div>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:8px;border:1px solid transparent;cursor:pointer;transition:border-color 0.15s;" id="pace-fast-label">
+          <input type="radio" name="travel-pace" value="fast" onchange="travelSave();travelUpdateProgress()" style="margin-top:3px;">
+          <div><div style="font-weight:600;color:var(--text);">Fast — 30 miles/day</div><div style="font-size:0.72rem;color:var(--text3);margin-top:2px;">−5 Passive Perception · No Stealth · Disadvantage on foraging</div></div>
+        </label>
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:10px;font-size:0.78rem;color:var(--text3);">
+        <strong style="color:var(--text);">Effective pace today:</strong> <span id="travel-effective-pace">24 miles/day</span>
+        <span style="color:var(--text3);"> (terrain modifier applied)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weather + Encounter row -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+    <div class="panel-card">
+      <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin:0 0 12px;">🌤 Weather</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">Climate</label>
+          <select id="travel-climate" class="form-control" style="width:100%;margin-top:4px;" onchange="travelSave()">
+            <option value="temperate">Temperate</option>
+            <option value="arctic">Arctic</option>
+            <option value="desert">Desert</option>
+            <option value="tropical">Tropical</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">Season</label>
+          <select id="travel-season" class="form-control" style="width:100%;margin-top:4px;" onchange="travelSave()">
+            <option value="spring">Spring</option>
+            <option value="summer">Summer</option>
+            <option value="fall">Fall</option>
+            <option value="winter">Winter</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-gold" style="width:100%;margin-bottom:12px;" onclick="travelRollWeather()">🎲 Roll Today's Weather</button>
+      <div id="travel-weather-result" style="display:none;background:var(--surface2);border-radius:8px;padding:12px;">
+        <div style="font-size:1.1rem;margin-bottom:4px;" id="travel-weather-icon"></div>
+        <div style="font-weight:600;color:var(--text);margin-bottom:4px;" id="travel-weather-name"></div>
+        <div style="font-size:0.78rem;color:var(--text3);" id="travel-weather-effect"></div>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin:0 0 12px;">⚠ Random Encounter</h3>
+      <div style="font-size:0.78rem;color:var(--text3);margin-bottom:12px;">
+        Encounter threshold varies by terrain. Roll a d20 — meet or exceed the threshold to trigger an encounter.
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <div style="flex:1;background:var(--surface2);border-radius:8px;padding:8px 12px;font-size:0.78rem;color:var(--text3);">
+          Threshold: <strong style="color:var(--text);" id="travel-enc-threshold">—</strong>
+        </div>
+        <button class="btn btn-gold" onclick="travelRollEncounter()">🎲 Roll</button>
+      </div>
+      <div id="travel-enc-result" style="display:none;background:var(--surface2);border-radius:8px;padding:12px;">
+        <div style="font-weight:600;margin-bottom:4px;" id="travel-enc-result-text"></div>
+        <div style="font-size:0.78rem;color:var(--text3);" id="travel-enc-roll-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advance Day + Travel Log -->
+  <div class="panel-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin:0;">📜 Travel Log</h3>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="text" id="travel-day-notes" class="form-control" placeholder="Notes for this day…" style="width:220px;">
+        <button class="btn btn-gold" onclick="travelAdvanceDay()">+ Log Day</button>
+        <button class="btn btn-ghost btn-sm" onclick="travelClearLog()" style="color:var(--text3);">Clear</button>
+      </div>
+    </div>
+    <div id="travel-log-list" style="max-height:280px;overflow-y:auto;">
+      <p style="color:var(--text3);font-size:0.85rem;font-style:italic;">No travel days logged yet.</p>
+    </div>
+  </div>
+
+</div>
 </div>
 
 <!-- ══════════════════════════════════════════════════
@@ -3608,7 +3785,13 @@ function defaultState() {
     quests: [],
     calendar: { day: 1, month: 1, year: 1492, notes: [] },
     upcomingEnemies: [],
-    upcomingGroups: []
+    upcomingGroups: [],
+    travel: {
+      from: '', to: '', terrain: 'road', pace: 'normal',
+      totalMiles: 0, milesCompleted: 0,
+      climate: 'temperate', season: 'summer',
+      log: []
+    }
   };
 }
 
@@ -3711,6 +3894,19 @@ function setTheme(theme) {
 // ═══════════════════════════════════════════════════════════
 //  TABS
 // ═══════════════════════════════════════════════════════════
+function navScroll(dir) {
+  const nav = document.getElementById('main-nav');
+  if (nav) nav.scrollBy({ left: dir * 160, behavior: 'smooth' });
+}
+function navScrollUpdate() {
+  const nav = document.getElementById('main-nav');
+  if (!nav) return;
+  const lBtn = document.getElementById('nav-scroll-left');
+  const rBtn = document.getElementById('nav-scroll-right');
+  const overflow = nav.scrollWidth > nav.clientWidth + 2;
+  if (lBtn) lBtn.classList.toggle('visible', overflow && nav.scrollLeft > 4);
+  if (rBtn) rBtn.classList.toggle('visible', overflow && nav.scrollLeft < nav.scrollWidth - nav.clientWidth - 4);
+}
 function switchTab(btn, tab) {
   document.querySelectorAll('.tab-panel').forEach(p => { p.classList.remove('active'); p.style.display = ''; });
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -3725,6 +3921,7 @@ function switchTab(btn, tab) {
   if (tab === 'encounter') initDiffCalc();
   if (tab === 'ai')        initAITab();
   if (tab === 'vault')     vaultInit().then(vaultRender);
+  if (tab === 'travel')    travelInit();
   if (tab === 'bastion') {
     const iframe = document.getElementById('bastion-iframe');
     if (iframe && !iframe.dataset.loaded) { iframe.src = 'bastion.html'; iframe.dataset.loaded = '1'; }
@@ -3805,6 +4002,16 @@ if (_dndChannel) {
   // Switch to the requested tab after app initialises
   window.addEventListener('load', () => switchTabById(tab), { once: true });
 })();
+
+// Nav scroll arrows setup
+window.addEventListener('load', () => {
+  const nav = document.getElementById('main-nav');
+  if (nav) {
+    nav.addEventListener('scroll', navScrollUpdate);
+    window.addEventListener('resize', navScrollUpdate);
+    navScrollUpdate();
+  }
+});
 
 // ═══════════════════════════════════════════════════════════
 //  DICE ROLLER
@@ -5456,6 +5663,222 @@ function stabilize(id) {
 // ═══════════════════════════════════════════════════════════
 //  FEATURE 4 — QUICK MONSTER ADD
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+//  TRAVEL TRACKER
+// ═══════════════════════════════════════════════════════════
+
+const TERRAIN_MULT = { road:1.0, plains:0.9, forest:0.75, hills:0.75, mountains:0.5, swamp:0.5, desert:0.75, arctic:0.5, sea:1.5 };
+const TERRAIN_ENC  = { road:18, plains:16, forest:14, hills:15, mountains:13, swamp:12, desert:15, arctic:14, sea:17 };
+const PACE_MILES   = { slow:18, normal:24, fast:30 };
+
+const WEATHER_TABLE = {
+  temperate: {
+    spring: [
+      { name:'Clear Skies',     icon:'☀️',  effect:'No effect.' },
+      { name:'Partly Cloudy',   icon:'⛅',  effect:'No effect.' },
+      { name:'Light Rain',      icon:'🌧',  effect:'Disadvantage on Perception checks relying on sight.' },
+      { name:'Heavy Rain',      icon:'⛈',  effect:'Disadvantage on Perception · Disadvantage on ranged attack rolls.' },
+      { name:'Fog',             icon:'🌫',  effect:'Heavily obscured beyond 30 ft · Disadvantage on Perception (sight).' },
+      { name:'Thunderstorm',    icon:'🌩',  effect:'Disadvantage on Perception · Ranged attacks impossible · Foraging fails.' },
+    ],
+    summer: [
+      { name:'Clear Skies',     icon:'☀️',  effect:'No effect.' },
+      { name:'Partly Cloudy',   icon:'⛅',  effect:'No effect.' },
+      { name:'Extreme Heat',    icon:'🌡',  effect:'After 1 hour, Con save DC 5 (+1/hour) or gain 1 Exhaustion. Heavy armor = disadvantage.' },
+      { name:'Light Rain',      icon:'🌦',  effect:'Disadvantage on Perception checks relying on sight.' },
+      { name:'Heavy Rain',      icon:'⛈',  effect:'Disadvantage on Perception · Disadvantage on ranged attack rolls.' },
+      { name:'Thunderstorm',    icon:'🌩',  effect:'Disadvantage on Perception · Ranged attacks impossible · Foraging fails.' },
+    ],
+    fall: [
+      { name:'Clear Skies',     icon:'☀️',  effect:'No effect.' },
+      { name:'Overcast',        icon:'☁️',  effect:'No effect.' },
+      { name:'Light Rain',      icon:'🌧',  effect:'Disadvantage on Perception checks relying on sight.' },
+      { name:'Heavy Rain',      icon:'⛈',  effect:'Disadvantage on Perception · Disadvantage on ranged attack rolls.' },
+      { name:'Fog',             icon:'🌫',  effect:'Heavily obscured beyond 30 ft · Disadvantage on Perception (sight).' },
+      { name:'High Winds',      icon:'💨',  effect:'Disadvantage on ranged attacks · Flying is difficult terrain.' },
+    ],
+    winter: [
+      { name:'Overcast',        icon:'☁️',  effect:'No effect.' },
+      { name:'Light Snow',      icon:'🌨',  effect:'Lightly obscured · Difficult terrain.' },
+      { name:'Heavy Snow',      icon:'❄️',  effect:'Heavily obscured beyond 30 ft · Difficult terrain · Con save DC 10 per hour or gain 1 Exhaustion (no cold resistance).' },
+      { name:'Blizzard',        icon:'🌬',  effect:'Visibility 5 ft · Difficult terrain · Con save DC 15 per hour or gain 1 Exhaustion · Foraging fails.' },
+      { name:'Extreme Cold',    icon:'🥶',  effect:'Con save DC 10 per hour or gain 1 Exhaustion. Wet = DC 15. Needs warm gear.' },
+      { name:'Clear & Cold',    icon:'🌤',  effect:'Extreme cold (see above) but visibility unaffected.' },
+    ],
+  },
+  arctic: {
+    spring:  [ { name:'Overcast',     icon:'☁️',  effect:'No effect.' }, { name:'Light Snow', icon:'🌨', effect:'Difficult terrain.' }, { name:'Heavy Snow', icon:'❄️', effect:'Heavily obscured · Difficult terrain · Con DC 10/hr or Exhaustion.' }, { name:'Blizzard', icon:'🌬', effect:'5 ft visibility · Difficult terrain · Con DC 15/hr or Exhaustion.' }, { name:'Extreme Cold', icon:'🥶', effect:'Con DC 10/hr or Exhaustion. Needs cold weather gear.' }, { name:'Clear & Freezing', icon:'🌤', effect:'Extreme Cold (above) — visibility fine.' } ],
+    summer:  [ { name:'Overcast',     icon:'☁️',  effect:'No effect.' }, { name:'Light Rain', icon:'🌧', effect:'Disadvantage Perception (sight).' }, { name:'Fog',         icon:'🌫', effect:'Heavily obscured 30 ft.' }, { name:'Cold Snap',   icon:'🌬', effect:'Con DC 10 per hour or gain 1 Exhaustion.' }, { name:'Clear',       icon:'☀️', effect:'No effect.' }, { name:'Heavy Rain',  icon:'⛈', effect:'Disadvantage Perception · ranged disadvantage.' } ],
+    fall:    [ { name:'Overcast',     icon:'☁️',  effect:'No effect.' }, { name:'Light Snow', icon:'🌨', effect:'Difficult terrain.' }, { name:'Heavy Snow',  icon:'❄️', effect:'Heavily obscured · Difficult terrain · Con DC 10/hr or Exhaustion.' }, { name:'Blizzard',    icon:'🌬', effect:'5 ft visibility · Difficult terrain · Con DC 15/hr.' }, { name:'Extreme Cold',icon:'🥶', effect:'Con DC 10/hr or Exhaustion.' }, { name:'Clear & Cold',icon:'🌤', effect:'Extreme cold but clear sky.' } ],
+    winter:  [ { name:'Extreme Cold', icon:'🥶',  effect:'Con DC 10/hr or Exhaustion. DC 15 if wet.' }, { name:'Blizzard',    icon:'🌬', effect:'5 ft visibility · Difficult terrain · Con DC 15/hr.' }, { name:'Heavy Snow',  icon:'❄️', effect:'Heavily obscured · Difficult terrain · Con DC 10/hr.' }, { name:'White-Out',   icon:'🌨', effect:'0 ft visibility · All travel impossible without guides.' }, { name:'Overcast',    icon:'☁️', effect:'Extreme cold — no precip.' }, { name:'Clear & Deadly', icon:'❄️', effect:'Extreme cold DC 15/hr — visibility fine.' } ],
+  },
+  desert: {
+    spring:  [ { name:'Clear & Warm',  icon:'☀️', effect:'No effect.' }, { name:'Hot & Dusty', icon:'🌡', effect:'Con DC 5/hr or Exhaustion (after 1 hr). Heavy armor = disadvantage.' }, { name:'Sandstorm',   icon:'💨', effect:'Heavily obscured 30 ft · Disadvantage Perception · Difficult terrain.' }, { name:'Light Breeze',icon:'🌬', effect:'No effect.' }, { name:'Scorching',   icon:'🔥', effect:'Extreme Heat: Con DC 10/hr or Exhaustion. Water consumption doubled.' }, { name:'Overcast',    icon:'☁️', effect:'No effect.' } ],
+    summer:  [ { name:'Scorching',     icon:'🔥', effect:'Extreme Heat: Con DC 10/hr or Exhaustion. Double water.' }, { name:'Extreme Heat',icon:'🌡', effect:'Con DC 5/hr or Exhaustion after 1 hr.' }, { name:'Sandstorm',   icon:'💨', effect:'Heavily obscured 30 ft · Difficult terrain.' }, { name:'Choking Dust',icon:'😤', effect:'Constitution saves DC 10 or poisoned for 1 hour.' }, { name:'Scorching Night',icon:'🌑',effect:'Extreme Heat persists overnight.' }, { name:'Hot Clear',   icon:'☀️', effect:'Extreme Heat in afternoon hours.' } ],
+    fall:    [ { name:'Clear & Warm',  icon:'☀️', effect:'No effect.' }, { name:'Hot & Dusty', icon:'🌡', effect:'Con DC 5/hr or Exhaustion.' }, { name:'Sandstorm',   icon:'💨', effect:'Heavily obscured 30 ft · Difficult terrain.' }, { name:'Cool Night',  icon:'🌙', effect:'Temperatures drop significantly at night — cold camp.' }, { name:'Overcast',    icon:'☁️', effect:'No effect.' }, { name:'Light Rain',  icon:'🌧', effect:'Rare but welcome — no effect.' } ],
+    winter:  [ { name:'Cold & Clear',  icon:'🌤', effect:'Cold at night: Con DC 10 per night or Exhaustion without shelter.' }, { name:'Overcast',    icon:'☁️', effect:'No effect.' }, { name:'Cold Night',  icon:'🌙', effect:'Extreme Cold overnight: Con DC 10.' }, { name:'Light Rain',  icon:'🌧', effect:'Rare — Disadvantage Perception.' }, { name:'Clear & Mild',icon:'☀️', effect:'No effect.' }, { name:'Windy',       icon:'💨', effect:'Disadvantage ranged attacks.' } ],
+  },
+  tropical: {
+    spring:  [ { name:'Partly Cloudy', icon:'⛅', effect:'No effect.' }, { name:'Heavy Rain',  icon:'⛈', effect:'Disadvantage Perception · ranged disadvantage.' }, { name:'Humid & Hot', icon:'🌡', effect:'Con DC 5/hr or Exhaustion after 1 hr.' }, { name:'Thunderstorm',icon:'🌩', effect:'Disadvantage Perception · ranged impossible · foraging fails.' }, { name:'Clear & Hot', icon:'☀️', effect:'No effect (mild).' }, { name:'Dense Fog',   icon:'🌫', effect:'Heavily obscured 30 ft.' } ],
+    summer:  [ { name:'Torrential Rain',icon:'🌊',effect:'Heavily obscured 60 ft · Difficult terrain · ranged attacks impossible.' }, { name:'Thunderstorm',icon:'🌩', effect:'Ranged impossible · Disadvantage Perception · foraging fails.' }, { name:'Oppressive Heat',icon:'🔥',effect:'Extreme Heat: Con DC 10/hr or Exhaustion. Double water.' }, { name:'Heavy Rain',  icon:'⛈', effect:'Disadvantage Perception · ranged disadvantage.' }, { name:'Clear & Hot', icon:'☀️', effect:'Extreme Heat in open terrain.' }, { name:'Dense Fog',   icon:'🌫', effect:'Heavily obscured 30 ft.' } ],
+    fall:    [ { name:'Partly Cloudy', icon:'⛅', effect:'No effect.' }, { name:'Heavy Rain',  icon:'⛈', effect:'Disadvantage Perception · ranged disadvantage.' }, { name:'Thunderstorm',icon:'🌩', effect:'Ranged impossible · Disadvantage Perception.' }, { name:'Clear & Warm',icon:'☀️', effect:'No effect.' }, { name:'Dense Fog',   icon:'🌫', effect:'Heavily obscured 30 ft.' }, { name:'Light Rain',  icon:'🌦', effect:'Disadvantage Perception (sight).' } ],
+    winter:  [ { name:'Clear & Warm',  icon:'☀️', effect:'No effect.' }, { name:'Partly Cloudy',icon:'⛅',effect:'No effect.' }, { name:'Light Rain',  icon:'🌧', effect:'Disadvantage Perception (sight).' }, { name:'Humid & Warm',icon:'🌡', effect:'No effect (mild season).' }, { name:'Dense Fog',   icon:'🌫', effect:'Heavily obscured 30 ft.' }, { name:'Heavy Rain',  icon:'⛈', effect:'Disadvantage Perception · ranged disadvantage.' } ],
+  },
+};
+
+function travelInit() {
+  if (!S.travel) S.travel = { from:'', to:'', terrain:'road', pace:'normal', totalMiles:0, milesCompleted:0, climate:'temperate', season:'summer', log:[] };
+  const t = S.travel;
+  document.getElementById('travel-from').value    = t.from || '';
+  document.getElementById('travel-to').value      = t.to || '';
+  document.getElementById('travel-total').value   = t.totalMiles || 0;
+  document.getElementById('travel-done').value    = t.milesCompleted || 0;
+  document.getElementById('travel-terrain').value = t.terrain || 'road';
+  document.getElementById('travel-climate').value = t.climate || 'temperate';
+  document.getElementById('travel-season').value  = t.season || 'summer';
+  const radios = document.querySelectorAll('input[name="travel-pace"]');
+  radios.forEach(r => { r.checked = r.value === (t.pace || 'normal'); });
+  travelUpdateProgress();
+  travelRenderLog();
+}
+
+function travelSave() {
+  if (!S.travel) S.travel = {};
+  S.travel.from          = document.getElementById('travel-from').value;
+  S.travel.to            = document.getElementById('travel-to').value;
+  S.travel.totalMiles    = parseFloat(document.getElementById('travel-total').value) || 0;
+  S.travel.milesCompleted= parseFloat(document.getElementById('travel-done').value) || 0;
+  S.travel.terrain       = document.getElementById('travel-terrain').value;
+  S.travel.climate       = document.getElementById('travel-climate').value;
+  S.travel.season        = document.getElementById('travel-season').value;
+  const paceR = document.querySelector('input[name="travel-pace"]:checked');
+  S.travel.pace          = paceR ? paceR.value : 'normal';
+  save();
+}
+
+function travelUpdateProgress() {
+  if (!S.travel) return;
+  travelSave();
+  const pace    = S.travel.pace || 'normal';
+  const terrain = S.travel.terrain || 'road';
+  const mult    = TERRAIN_MULT[terrain] || 1;
+  const baseMi  = PACE_MILES[pace] || 24;
+  const effMi   = Math.round(baseMi * mult * 10) / 10;
+
+  // pace highlight
+  ['slow','normal','fast'].forEach(p => {
+    const lbl = document.getElementById('pace-' + p + '-label');
+    if (lbl) lbl.style.borderColor = p === pace ? 'var(--gold)' : 'transparent';
+  });
+
+  document.getElementById('travel-effective-pace').textContent = effMi + ' miles/day';
+
+  const total = S.travel.totalMiles || 0;
+  const done  = S.travel.milesCompleted || 0;
+  const rem   = Math.max(0, total - done);
+  const pct   = total > 0 ? Math.min(100, Math.round(done / total * 100)) : 0;
+  const days  = effMi > 0 ? Math.ceil(rem / effMi) : '—';
+  document.getElementById('travel-progress-bar').style.width  = pct + '%';
+  document.getElementById('travel-progress-label').textContent = done + ' / ' + total + ' miles (' + pct + '%)';
+  document.getElementById('travel-days-label').textContent     = rem > 0 ? days + ' day' + (days !== 1 ? 's' : '') + ' remaining' : (total > 0 ? '✓ Destination reached!' : '— days remaining');
+
+  // encounter threshold
+  const thresh = TERRAIN_ENC[terrain] || 16;
+  const el = document.getElementById('travel-enc-threshold');
+  if (el) el.textContent = thresh + '+ on d20';
+}
+
+function travelRollWeather() {
+  const climate = (document.getElementById('travel-climate').value) || 'temperate';
+  const season  = (document.getElementById('travel-season').value) || 'summer';
+  const table   = WEATHER_TABLE[climate]?.[season] || WEATHER_TABLE.temperate.summer;
+  const result  = table[Math.floor(Math.random() * table.length)];
+  document.getElementById('travel-weather-icon').textContent   = result.icon;
+  document.getElementById('travel-weather-name').textContent   = result.name;
+  document.getElementById('travel-weather-effect').textContent = result.effect;
+  document.getElementById('travel-weather-result').style.display = 'block';
+  return result;
+}
+
+function travelRollEncounter() {
+  const terrain = S.travel?.terrain || 'road';
+  const thresh  = TERRAIN_ENC[terrain] || 16;
+  const roll    = Math.ceil(Math.random() * 20);
+  const hit     = roll >= thresh;
+  const el      = document.getElementById('travel-enc-result');
+  const txt     = document.getElementById('travel-enc-result-text');
+  const sub     = document.getElementById('travel-enc-roll-text');
+  txt.textContent = hit ? '⚔️ Encounter!' : '✅ No Encounter';
+  txt.style.color = hit ? 'var(--danger, #e06c75)' : 'var(--gold)';
+  sub.textContent = 'Rolled ' + roll + ' (need ' + thresh + '+)';
+  el.style.display = 'block';
+  return { roll, hit };
+}
+
+function travelAdvanceDay() {
+  if (!S.travel) S.travel = { log:[] };
+  if (!S.travel.log) S.travel.log = [];
+  const pace    = S.travel.pace || 'normal';
+  const terrain = S.travel.terrain || 'road';
+  const mult    = TERRAIN_MULT[terrain] || 1;
+  const baseMi  = PACE_MILES[pace] || 24;
+  const effMi   = Math.round(baseMi * mult * 10) / 10;
+
+  // roll weather automatically
+  const climate = S.travel.climate || 'temperate';
+  const season  = S.travel.season  || 'summer';
+  const table   = WEATHER_TABLE[climate]?.[season] || WEATHER_TABLE.temperate.summer;
+  const weather = table[Math.floor(Math.random() * table.length)];
+
+  // roll encounter
+  const thresh  = TERRAIN_ENC[terrain] || 16;
+  const encRoll = Math.ceil(Math.random() * 20);
+  const encHit  = encRoll >= thresh;
+
+  const notes = document.getElementById('travel-day-notes').value.trim();
+  const day   = S.travel.log.length + 1;
+
+  S.travel.milesCompleted = (S.travel.milesCompleted || 0) + effMi;
+  S.travel.log.push({ day, miles: effMi, weather: weather.name, weatherIcon: weather.icon, weatherEffect: weather.effect, encRoll, encHit, notes });
+  document.getElementById('travel-day-notes').value = '';
+  save();
+  travelUpdateProgress();
+  travelRenderLog();
+  // update UI fields
+  const doneEl = document.getElementById('travel-done');
+  if (doneEl) doneEl.value = Math.round(S.travel.milesCompleted * 10) / 10;
+}
+
+function travelClearLog() {
+  if (!confirm('Clear entire travel log?')) return;
+  if (!S.travel) return;
+  S.travel.log = [];
+  S.travel.milesCompleted = 0;
+  const doneEl = document.getElementById('travel-done');
+  if (doneEl) doneEl.value = 0;
+  save();
+  travelUpdateProgress();
+  travelRenderLog();
+}
+
+function travelRenderLog() {
+  const list = document.getElementById('travel-log-list');
+  if (!list) return;
+  const log = S.travel?.log || [];
+  if (!log.length) {
+    list.innerHTML = '<p style="color:var(--text3);font-size:0.85rem;font-style:italic;">No travel days logged yet.</p>';
+    return;
+  }
+  list.innerHTML = [...log].reverse().map(e => `
+    <div style="display:grid;grid-template-columns:50px 1fr 1fr 1fr;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid var(--surface2);font-size:0.82rem;">
+      <div style="color:var(--text3);font-weight:600;">Day ${e.day}</div>
+      <div>${e.weatherIcon} <strong style="color:var(--text);">${e.weather}</strong><div style="font-size:0.72rem;color:var(--text3);margin-top:2px;">${e.weatherEffect.length > 60 ? e.weatherEffect.slice(0,57)+'…' : e.weatherEffect}</div></div>
+      <div>${e.encHit ? '<span style="color:var(--danger,#e06c75)">⚔️ Encounter</span>' : '<span style="color:var(--gold)">✅ Clear</span>'}<div style="font-size:0.72rem;color:var(--text3);">Rolled ${e.encRoll}</div></div>
+      <div style="color:var(--text3);">${e.miles} mi${e.notes ? '<br><em style="color:var(--text);">'+e.notes+'</em>' : ''}</div>
+    </div>`).join('');
+}
+
 // ═══════════════════════════════════════════════════════════
 //  VAULT — IndexedDB file storage
 // ═══════════════════════════════════════════════════════════
