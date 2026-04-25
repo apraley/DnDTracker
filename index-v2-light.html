@@ -5174,11 +5174,13 @@ function pushCombatant({ name, type, initiative, hp, ac, cr = null, stats = null
   if (type === 'monster' && activeSessId) {
     const sess = getSess();
     if (sess) {
+      if (document.querySelector('[data-nn]')) gatherDynamic(sess);
       sess.combatEncounters = sess.combatEncounters || [];
       const crStr = cr != null ? ` (CR ${cr})` : '';
       const entry = `${name}${crStr}`;
       if (!sess.combatEncounters.includes(entry)) {
         sess.combatEncounters.push(entry);
+        syncSessEditor(sess);
       }
     }
   }
@@ -7283,6 +7285,14 @@ function loadSess(id) {
 
 function getSess() { return S.sessions.find(s=>s.id===activeSessId); }
 
+// If the session editor is already rendered in the DOM, capture any live edits
+// before mutating the session object, then re-render so the new entry is visible.
+function syncSessEditor(s) {
+  if (!s) return;
+  if (document.querySelector('[data-nn]')) gatherDynamic(s); // absorb live edits
+  renderSessEditor(s);
+}
+
 // ── Universal "add to session notes" helper ───────────────────────────────────
 function quickAddToSession(text, field) {
   // Called from Quick Note bar (no args) or programmatically with text+field
@@ -7301,12 +7311,15 @@ function quickAddToSession(text, field) {
   const s = getSess(); if (!s) return;
   const ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   // Route to the right bucket based on field hint, default to quickNotes
+  // Capture any live edits before mutating so nothing is lost
+  if (document.querySelector('[data-nn]')) gatherDynamic(s);
   if (field === 'combat')    { s.combatEncounters = s.combatEncounters||[]; s.combatEncounters.push(text); }
   else if (field === 'npc')  { s.npcs = s.npcs||[]; s.npcs.push({ name: text, notes: '' }); }
   else if (field === 'loot') { s.loot = s.loot||[]; s.loot.push({ item: text, qty: '' }); }
   else if (field === 'event'){ s.events = s.events||[]; s.events.push(text); }
   else                       { s.quickNotes = s.quickNotes||[]; s.quickNotes.push({ text, ts }); }
   save();
+  syncSessEditor(s);
   // Clear quick-note input if that's what triggered this
   const inp = document.getElementById('quick-note-input');
   if (inp && inp.value.trim() === text) inp.value = '';
@@ -8081,9 +8094,11 @@ function saveLootToSession() {
   if (lastLoot.pp) coins.push(`${lastLoot.pp}pp`);
   const itemList = lastLoot.items.map(i => i.name).join(', ');
   const entry = [coins.join(', '), itemList].filter(Boolean).join(' | ');
+  if (document.querySelector('[data-nn]')) gatherDynamic(s); // capture live edits first
   s.loot = s.loot || [];
   s.loot.push({ item: entry, qty: '' });
   save();
+  syncSessEditor(s);
   const btn = event.target;
   btn.textContent = '✓ Added!'; btn.style.color = 'var(--green2)';
   setTimeout(() => { btn.textContent = '📜 Add to Session Notes'; btn.style.color = ''; }, 2000);
@@ -8867,6 +8882,7 @@ function saveNPCToSession() {
     showErr('npc-err', activeSessId ? '⚠ Generate an NPC first.' : '⚠ Open a session via the Sessions sidebar first.'); return;
   }
   const s = getSess(); if (!s) return;
+  if (document.querySelector('[data-nn]')) gatherDynamic(s); // capture live edits first
   s.npcs = s.npcs || [];
   s.npcs.push({
     name: lastNPC.fullName,
@@ -8876,6 +8892,7 @@ function saveNPCToSession() {
   S.savedNPCs = S.savedNPCs || [];
   S.savedNPCs.push({ ...lastNPC, id: uid() });
   save();
+  syncSessEditor(s);
   renderSavedNPCs();
   const btn = event.target;
   btn.textContent = '✓ Saved!'; btn.style.color = 'var(--green2)';
@@ -10100,9 +10117,10 @@ function saveEncounterToSession() {
   if (!lastEncounter) return;
   if (!activeSessId) { showErr('enc-err','⚠ Open a session in the Sessions tab first.'); return; }
   const s = getSess(); if (!s) return;
+  if (document.querySelector('[data-nn]')) gatherDynamic(s);
   s.combatEncounters = s.combatEncounters || [];
   s.combatEncounters.push(`[${lastEncounter.type}] ${lastEncounter.hook}`);
-  save(); showToast('📝 Added to session notes');
+  save(); syncSessEditor(s); showToast('📝 Added to session notes');
 }
 
 // ── Micro Encounter Generator ─────────────────────────────────────────────────
@@ -12303,9 +12321,10 @@ function saveCommerceToSession() {
   if (!lastCommerce || !activeSessId) return;
   const s = getSess(); if (!s) return;
   const entry = `${lastCommerce.name} (${lastCommerce.type}) — ${lastCommerce.location}. Proprietor: ${lastCommerce.pName} (${lastCommerce.race}).`;
+  if (document.querySelector('[data-nn]')) gatherDynamic(s);
   s.events = s.events || [];
   s.events.push(entry);
-  save(); showToast('📝 Added to session notes');
+  save(); syncSessEditor(s); showToast('📝 Added to session notes');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -14660,9 +14679,10 @@ function saveTavernToSession() {
   if (!lastTavern || !activeSessId) return;
   const s = getSess(); if (!s) return;
   const entry = `${lastTavern.name} — ${lastTavern.location}. Innkeeper: ${lastTavern.iName} (${lastTavern.race}).`;
+  if (document.querySelector('[data-nn]')) gatherDynamic(s);
   s.events = s.events || [];
   s.events.push(entry);
-  save();
+  save(); syncSessEditor(s);
   const btn = event.target;
   btn.textContent = '✓ Saved!'; btn.style.color = 'var(--green2)';
   setTimeout(() => { btn.textContent = '📜 Save to Session'; btn.style.color = ''; }, 2000);
